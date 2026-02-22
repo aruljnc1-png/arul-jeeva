@@ -1,176 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arul & Jeeva</title>
-
 <style>
-body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:linear-gradient(135deg,#f7f4ff,#e8e2ff);
-  color:#2b1b4d;
-  text-align:center;
-}
-
-header {
-  padding:50px 20px 20px;
-}
-
-.quote {
-  opacity:.85;
-  font-style:italic;
-}
-
-#spiritual img {
-  max-width:90%;
-  border-radius:20px;
-  margin:30px 0;
-}
-
-#upload-section {
-  padding:20px;
-}
-
-button {
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  background:#8a6cff;
-  color:white;
-  cursor:pointer;
-}
-
-#album-gallery {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:20px;
-  padding:20px;
-}
-
-.album {
-  background:white;
-  border-radius:12px;
-  padding:10px;
-  cursor:pointer;
-}
-
-.album img {
-  width:100%;
-  border-radius:10px;
-}
-
-#photo-grid {
-  display:none;
-  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:15px;
-  padding:20px;
-}
-
-#photo-grid img {
-  width:100%;
-  border-radius:10px;
-}
+  body{margin:0;font-family:Arial,sans-serif;background:#f3efff;color:#2b1b4d;text-align:center}
+  header{padding:30px 12px}
+  #spiritual img{max-width:90%;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.15)}
+  #debug{max-width:900px;margin:14px auto;padding:10px 12px;background:#fff;border:1px solid #ddd;border-radius:12px;text-align:left;font-family:monospace;font-size:12px;overflow:auto}
+  #albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;padding:16px}
+  .card{background:#fff;border:2px solid #8a6cff;border-radius:14px;padding:10px;cursor:pointer}
+  .card img{width:100%;border-radius:10px}
+  .name{margin-top:8px;font-weight:bold}
 </style>
-
 </head>
 <body>
 
 <header>
-<h1>Arul & Jeeva</h1>
-<p class="quote">Every shared moment is a meditation, a bridge connecting our inner worlds.</p>
+  <h1>Arul & Jeeva</h1>
+  <div>Every shared moment is a meditation, a bridge connecting our inner worlds.</div>
 </header>
 
-<div id="spiritual">
-<img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png">
-</div>
+<section id="spiritual">
+  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual Connection">
+</section>
 
-<div id="upload-section">
-<input type="text" id="momentName" placeholder="Moment Name">
-<input type="file" id="fileInput" multiple>
-<button onclick="upload()">Upload</button>
-</div>
-
-<div id="album-gallery"></div>
-
-<div id="photo-grid"></div>
-<button id="backBtn" onclick="back()" style="display:none;">Back</button>
+<div id="debug">Loading albums…</div>
+<div id="albums"></div>
 
 <script>
+const BACKEND = "https://arul-jeeva.vercel.app/albums";
 
-const backend="https://arul-jeeva.vercel.app/albums";
-const cloud="dtamlqfx3";
-const preset="aruljeeva";
+async function loadAlbums(){
+  const debug = document.getElementById("debug");
+  const albumsDiv = document.getElementById("albums");
+  albumsDiv.innerHTML = "";
 
-async function load(){
+  const url = BACKEND + "?t=" + Date.now();
 
-  const res=await fetch(backend+"?t="+Date.now());
-  const albums=await res.json();
+  try{
+    debug.textContent = "Fetching: " + url;
 
-  const gallery=document.getElementById("album-gallery");
-  gallery.innerHTML="";
+    const res = await fetch(url, { cache: "no-store" });
 
-  albums.forEach(a=>{
-    const div=document.createElement("div");
-    div.className="album";
-    div.innerHTML=`<img src="${a.thumbnail}"><p>${a.name}</p>`;
-    div.onclick=()=>open(a);
-    gallery.appendChild(div);
-  });
+    debug.textContent = "HTTP " + res.status;
 
-}
+    if(!res.ok){
+      const txt = await res.text().catch(()=> "");
+      debug.textContent = "Backend error HTTP " + res.status + " :: " + txt.slice(0,300);
+      return;
+    }
 
-function open(album){
+    const albums = await res.json();
+    debug.textContent = "OK. Albums found: " + albums.length;
 
-  document.getElementById("album-gallery").style.display="none";
-  document.getElementById("photo-grid").style.display="grid";
-  document.getElementById("backBtn").style.display="block";
-
-  const grid=document.getElementById("photo-grid");
-  grid.innerHTML="";
-
-  album.photos.forEach(p=>{
-    const img=document.createElement("img");
-    img.src=p;
-    grid.appendChild(img);
-  });
-
-}
-
-function back(){
-
-  document.getElementById("album-gallery").style.display="grid";
-  document.getElementById("photo-grid").style.display="none";
-  document.getElementById("backBtn").style.display="none";
-
-}
-
-async function upload(){
-
-  const name=document.getElementById("momentName").value||"Default";
-  const files=document.getElementById("fileInput").files;
-
-  for(const f of files){
-
-    const fd=new FormData();
-    fd.append("file",f);
-    fd.append("upload_preset",preset);
-    fd.append("folder",name);
-
-    await fetch(`https://api.cloudinary.com/v1_1/${cloud}/upload`,{
-      method:"POST",
-      body:fd
+    albums.forEach(a=>{
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${a.thumbnail}">
+        <div class="name">${a.name}</div>
+      `;
+      albumsDiv.appendChild(card);
     });
 
+  }catch(e){
+    debug.textContent = "FETCH FAILED :: " + (e && e.message ? e.message : String(e));
   }
-
-  load();
-
 }
 
-load();
-
+loadAlbums();
 </script>
 
 </body>
