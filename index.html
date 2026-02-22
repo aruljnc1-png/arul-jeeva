@@ -15,16 +15,19 @@ h1 {margin:0; font-weight:500;}
 #upload-section input, button {padding:12px; border-radius:12px; border:1px solid #ccc; font-size:16px;}
 button {background:#8a6cff; color:white; border:none; cursor:pointer;}
 button:active {transform:scale(0.97);}
-#album-gallery {display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:20px;}
+#album-gallery {display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px; padding:20px;}
 #album-gallery div {border:1px solid #ccc; border-radius:12px; padding:10px; background:rgba(255,255,255,0.9); transition:transform 0.2s;}
 #album-gallery div:hover {transform:scale(1.02);}
 #album-gallery img {width:100%; border-radius:12px; cursor:pointer;}
-#album-gallery p {margin:8px 0 0; font-weight:500;}
-#photo-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:15px; padding:20px;}
+#album-gallery p {margin:8px 0 0; font-weight:500; word-break: break-word;}
+#photo-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; padding:20px;}
 #photo-grid img {width:100%; border-radius:12px; cursor:pointer;}
 #backBtn {margin:10px; padding:10px 20px; border-radius:999px; border:none; background:#6f52ff; color:white; cursor:pointer;}
 #lightbox {display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999;}
 #lightbox img {max-width:95%; max-height:95%; border-radius:16px;}
+@media(max-width:600px){
+  #album-gallery, #photo-grid {grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
+}
 </style>
 </head>
 <body>
@@ -55,27 +58,39 @@ button:active {transform:scale(0.97);}
 <script>
 const CLOUD_NAME="dtamlqfx3";
 const UPLOAD_PRESET="aruljeeva";
+const BACKEND_URL="https://arul-jeeva-17iu0jnxt-aruljnc1-5923s-projects.vercel.app/albums";
 
 const albumGallery=document.getElementById("album-gallery");
 const photoGrid=document.getElementById("photo-grid");
 const backBtn=document.getElementById("backBtn");
 const lightbox=document.getElementById("lightbox");
 const lightboxImg=document.getElementById("lightboxImg");
+const spiritualSection=document.getElementById("spiritual");
 
-// Load albums from albums.json
 async function loadAlbums(){
-  const res=await fetch("albums.json");
-  const albums=await res.json();
-  albumGallery.innerHTML="";
-  albums.forEach(album=>{
-    const div=document.createElement("div");
-    div.innerHTML=`<img src="${album.thumbnail}" /><p>${album.name}</p>`;
-    div.onclick=()=>openAlbum(album);
-    albumGallery.appendChild(div);
-  });
+  try{
+    const res=await fetch(BACKEND_URL);
+    const albums=await res.json();
+    albumGallery.innerHTML="";
+
+    if(albums.length>0){
+      spiritualSection.style.display="none";
+    } else {
+      spiritualSection.style.display="flex";
+    }
+
+    albums.forEach(album=>{
+      const div=document.createElement("div");
+      div.innerHTML=`<img src="${album.thumbnail}" /><p>${album.name}</p>`;
+      div.onclick=()=>openAlbum(album);
+      albumGallery.appendChild(div);
+    });
+  }catch(err){
+    console.error("Failed to load albums:",err);
+    spiritualSection.style.display="flex";
+  }
 }
 
-// Open album to show photos
 function openAlbum(album){
   albumGallery.style.display="none";
   photoGrid.style.display="grid";
@@ -95,24 +110,22 @@ backBtn.onclick=()=>{
   albumGallery.style.display="grid";
 };
 
-// Lightbox
 lightbox.addEventListener("click",()=>{lightbox.style.display="none";});
 
-// Upload photos to Cloudinary
 document.getElementById("uploadBtn").addEventListener("click",async ()=>{
   const momentName=document.getElementById("momentName").value.trim()||"Default";
   const files=document.getElementById("fileInput").files;
   if(!files.length)return alert("Select at least one photo");
+
   for(const file of files){
     const formData=new FormData();
     formData.append("file",file);
     formData.append("upload_preset",UPLOAD_PRESET);
     formData.append("folder",momentName);
-    const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,{method:"POST",body:formData});
-    const data=await res.json();
-    console.log("Uploaded:",data.secure_url);
+    await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,{method:"POST",body:formData});
   }
-  alert("Upload complete! Refresh page to see new photos.");
+
+  alert("Upload complete! Refresh page to see new albums.");
   document.getElementById("fileInput").value="";
   document.getElementById("momentName").value="";
 });
