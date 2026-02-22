@@ -4,8 +4,97 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arul & Jeeva</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* GENERAL STYLING */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f7f4ff, #e8e2ff);
+      color: #2b1b4d;
+      text-align: center;
+    }
+
+    header {
+      padding: 50px 20px 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .quote {
+      margin-top: 10px;
+      opacity: 0.85;
+      font-style: italic;
+    }
+
+    /* SPIRITUAL IMAGE */
+    #spiritual {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    #spiritual img {
+      max-width: 90%;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    /* GALLERY GRID */
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      padding: 20px;
+    }
+
+    #gallery img {
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* UPLOAD BUTTON */
+    #upload-section {
+      padding: 30px;
+    }
+
+    button {
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: none;
+      background: #8a6cff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    /* LIGHTBOX */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    #lightbox img {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 16px;
+    }
+  </style>
 </head>
+
 <body>
 
   <header>
@@ -23,17 +112,58 @@
     />
   </section>
 
+  <!-- GALLERY -->
   <section id="gallery"></section>
 
+  <!-- UPLOAD BUTTON -->
   <section id="upload-section">
     <button id="uploadBtn">📸 Upload a Memory</button>
     <input type="file" id="fileInput" accept="image/*" multiple hidden />
   </section>
 
+  <!-- LIGHTBOX -->
   <div id="lightbox">
     <img id="lightboxImg" />
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const uploadBtn = document.getElementById("uploadBtn");
+      const fileInput = document.getElementById("fileInput");
+      const gallery = document.getElementById("gallery");
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
+
+      // Click upload button triggers file input
+      uploadBtn.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      // Handle selected images
+      fileInput.addEventListener("change", () => {
+        Array.from(fileInput.files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.onclick = () => {
+              lightbox.style.display = "flex";
+              lightboxImg.src = img.src;
+            };
+            gallery.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+        fileInput.value = "";
+      });
+
+      // Close lightbox on click
+      lightbox.addEventListener("click", () => {
+        lightbox.style.display = "none";
+      });
+
+    });
+  </script>
 </body>
 </html>
