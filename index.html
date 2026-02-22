@@ -4,81 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arul & Jeeva</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #f5f7ff, #eef2ff);
-      color: #222;
-      text-align: center;
-    }
-
-    header {
-      padding: 40px 20px 20px;
-    }
-
-    h1 {
-      margin: 0;
-      font-weight: 500;
-    }
-
-    .quote {
-      margin-top: 10px;
-      font-style: italic;
-      opacity: 0.85;
-    }
-
-    #gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 12px;
-      padding: 20px;
-    }
-
-    #gallery img {
-      width: 100%;
-      border-radius: 10px;
-      object-fit: cover;
-      cursor: pointer;
-    }
-
-    #upload-section {
-      padding: 30px 20px 50px;
-    }
-
-    #uploadBtn {
-      padding: 14px 22px;
-      font-size: 16px;
-      border: none;
-      border-radius: 999px;
-      background: #6c7cff;
-      color: white;
-      cursor: pointer;
-    }
-
-    #uploadBtn:active {
-      transform: scale(0.97);
-    }
-
-    #lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-
-    #lightbox img {
-      max-width: 95%;
-      max-height: 95%;
-      border-radius: 12px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
 
   <header>
@@ -88,59 +15,25 @@
     </p>
   </header>
 
+  <!-- SPIRITUAL IMAGE -->
+  <section id="spiritual">
+    <img 
+      src="https://res.cloudinary.com/dtamlqfx3/image/upload/f_auto,q_auto/v1771768963/spiritual-section_cmf3ue.png"
+      alt="Spiritual Connection"
+    />
+  </section>
+
   <section id="gallery"></section>
 
   <section id="upload-section">
     <button id="uploadBtn">📸 Upload a Memory</button>
-    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden />
   </section>
 
   <div id="lightbox">
-    <img id="lightboxImg">
+    <img id="lightboxImg" />
   </div>
 
-  <script>
-    console.log("JS loaded");
-
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("DOM ready");
-
-      const uploadBtn = document.getElementById("uploadBtn");
-      const fileInput = document.getElementById("fileInput");
-      const gallery = document.getElementById("gallery");
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
-
-      uploadBtn.addEventListener("click", () => {
-        console.log("Upload button clicked");
-        fileInput.click();
-      });
-
-      fileInput.addEventListener("change", () => {
-        console.log("Files selected:", fileInput.files.length);
-
-        Array.from(fileInput.files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.onclick = () => {
-              lightbox.style.display = "flex";
-              lightboxImg.src = img.src;
-            };
-            gallery.appendChild(img);
-          };
-          reader.readAsDataURL(file);
-        });
-
-        fileInput.value = "";
-      });
-
-      lightbox.addEventListener("click", () => {
-        lightbox.style.display = "none";
-      });
-    });
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
