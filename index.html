@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arul & Jeeva</title>
-
   <style>
-    /* GENERAL STYLING */
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -15,155 +13,168 @@
       text-align: center;
     }
 
-    header {
-      padding: 50px 20px 20px;
-    }
+    header { padding: 50px 20px 20px; }
+    h1 { margin: 0; font-weight: 500; }
+    .quote { margin-top: 10px; opacity: 0.85; font-style: italic; }
 
-    h1 {
-      margin: 0;
-      font-weight: 500;
-    }
-
-    .quote {
-      margin-top: 10px;
-      opacity: 0.85;
-      font-style: italic;
-    }
-
-    /* SPIRITUAL IMAGE */
-    #spiritual {
+    #upload-section {
+      padding: 20px;
       display: flex;
       justify-content: center;
-      margin: 30px 0;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
     }
-
-    #spiritual img {
-      max-width: 90%;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    #upload-section input, button {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
+    button { background:#8a6cff; color:white; border:none; cursor:pointer; }
+    button:active { transform: scale(0.97); }
 
-    /* GALLERY GRID */
-    #gallery {
+    #album-gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+      gap: 20px;
       padding: 20px;
     }
+    #album-gallery img {
+      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    #album-gallery p { margin:5px 0 0; font-weight:500; }
 
-    #gallery img {
+    #photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    #photo-grid img {
       width: 100%;
       border-radius: 12px;
       cursor: pointer;
     }
 
-    /* UPLOAD BUTTON */
-    #upload-section {
-      padding: 30px;
-    }
-
-    button {
-      padding: 14px 24px;
+    #backBtn {
+      margin: 10px;
+      padding: 10px 20px;
       border-radius: 999px;
-      border: none;
-      background: #8a6cff;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
+      border:none;
+      background:#6f52ff;
+      color:white;
+      cursor:pointer;
     }
 
-    button:active {
-      transform: scale(0.97);
-    }
-
-    /* LIGHTBOX */
     #lightbox {
-      display: none;
+      display:none;
       position: fixed;
-      inset: 0;
+      inset:0;
       background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
+      justify-content:center;
+      align-items:center;
+      z-index:999;
     }
-
-    #lightbox img {
-      max-width: 95%;
-      max-height: 95%;
-      border-radius: 16px;
-    }
+    #lightbox img { max-width:95%; max-height:95%; border-radius:16px; }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1>Arul & Jeeva</h1>
-    <p class="quote">
-      Every shared moment is a meditation, a bridge connecting our inner worlds.
-    </p>
-  </header>
+<header>
+  <h1>Arul & Jeeva</h1>
+  <p class="quote">Every shared moment is a meditation, a bridge connecting our inner worlds.</p>
+</header>
 
-  <!-- SPIRITUAL IMAGE -->
-  <section id="spiritual">
-    <img 
-      src="https://res.cloudinary.com/dtamlqfx3/image/upload/f_auto,q_auto/v1771768963/spiritual-section_cmf3ue.png"
-      alt="Spiritual Connection"
-    />
-  </section>
+<section id="upload-section">
+  <input type="text" id="momentName" placeholder="Enter Moment Name" />
+  <input type="file" id="fileInput" accept="image/*" multiple />
+  <button id="uploadBtn">📸 Upload Memory</button>
+</section>
 
-  <!-- GALLERY -->
-  <section id="gallery"></section>
+<section id="album-gallery"></section>
+<section id="photo-grid" style="display:none;"></section>
+<button id="backBtn" style="display:none;">⬅ Back to Albums</button>
 
-  <!-- UPLOAD BUTTON -->
-  <section id="upload-section">
-    <button id="uploadBtn">📸 Upload a Memory</button>
-    <input type="file" id="fileInput" accept="image/*" multiple hidden />
-  </section>
+<div id="lightbox">
+  <img id="lightboxImg" />
+</div>
 
-  <!-- LIGHTBOX -->
-  <div id="lightbox">
-    <img id="lightboxImg" />
-  </div>
+<script>
+  const CLOUD_NAME = "YOUR_CLOUD_NAME"; // Replace with your Cloudinary name
+  const UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET"; // Replace with your unsigned preset
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
+  const albumGallery = document.getElementById("album-gallery");
+  const photoGrid = document.getElementById("photo-grid");
+  const backBtn = document.getElementById("backBtn");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
 
-      const uploadBtn = document.getElementById("uploadBtn");
-      const fileInput = document.getElementById("fileInput");
-      const gallery = document.getElementById("gallery");
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
-
-      // Click upload button triggers file input
-      uploadBtn.addEventListener("click", () => {
-        fileInput.click();
+  // Load albums from JSON
+  async function loadAlbums() {
+    try {
+      const res = await fetch("albums.json"); // Your static JSON in repo
+      const albums = await res.json();
+      albumGallery.innerHTML = "";
+      albums.forEach(album => {
+        const div = document.createElement("div");
+        div.innerHTML = `<img src="${album.thumbnail}" /><p>${album.name}</p>`;
+        div.onclick = () => openAlbum(album);
+        albumGallery.appendChild(div);
       });
+    } catch(err) { console.error("Failed to load albums:", err); }
+  }
 
-      // Handle selected images
-      fileInput.addEventListener("change", () => {
-        Array.from(fileInput.files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.onclick = () => {
-              lightbox.style.display = "flex";
-              lightboxImg.src = img.src;
-            };
-            gallery.appendChild(img);
-          };
-          reader.readAsDataURL(file);
-        });
-        fileInput.value = "";
-      });
-
-      // Close lightbox on click
-      lightbox.addEventListener("click", () => {
-        lightbox.style.display = "none";
-      });
-
+  function openAlbum(album) {
+    albumGallery.style.display = "none";
+    photoGrid.style.display = "grid";
+    backBtn.style.display = "inline-block";
+    photoGrid.innerHTML = "";
+    album.photos.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.onclick = () => { lightbox.style.display = "flex"; lightboxImg.src = url; };
+      photoGrid.appendChild(img);
     });
-  </script>
+  }
+
+  backBtn.onclick = () => {
+    photoGrid.style.display = "none";
+    backBtn.style.display = "none";
+    albumGallery.style.display = "grid";
+  };
+
+  lightbox.addEventListener("click", () => { lightbox.style.display = "none"; });
+
+  // Upload photos
+  document.getElementById("uploadBtn").addEventListener("click", async () => {
+    const momentName = document.getElementById("momentName").value.trim() || "Default";
+    const files = document.getElementById("fileInput").files;
+    if (!files.length) return alert("Select at least one photo");
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
+      formData.append("folder", momentName);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      console.log("Uploaded:", data.secure_url);
+    }
+
+    alert("Upload complete! Update albums.json to show in gallery.");
+    document.getElementById("fileInput").value = "";
+    document.getElementById("momentName").value = "";
+  });
+
+  loadAlbums();
+</script>
+
 </body>
 </html>
