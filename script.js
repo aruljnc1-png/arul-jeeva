@@ -1,71 +1,42 @@
-const cloudName = "dtamlqfx3";
-const uploadPreset = "aruljeeva";
+document.addEventListener("DOMContentLoaded", () => {
 
-const fileInput = document.getElementById("fileInput");
-const uploadBtn = document.getElementById("uploadBtn");
-const gallery = document.getElementById("gallery");
-const albumSelect = document.getElementById("albumSelect");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const fileInput = document.getElementById("fileInput");
+  const gallery = document.getElementById("gallery");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
 
-let albums = {};
+  uploadBtn.addEventListener("click", () => {
+    fileInput.click();
+  });
 
-uploadBtn.onclick = () => {
-  let album = albumSelect.value;
+  fileInput.addEventListener("change", function () {
+    const files = this.files;
 
-  if (!album) {
-    album = prompt("Moment title (e.g. Krabi)");
-    if (!album) return;
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
 
-    addAlbum(album);
-    albumSelect.value = album;
+      reader.onload = function (e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.onclick = () => openLightbox(img.src);
+        gallery.appendChild(img);
+      };
+
+      reader.readAsDataURL(files[i]);
+    }
+
+    // reset so same photo can be re-selected
+    fileInput.value = "";
+  });
+
+  function openLightbox(src) {
+    lightbox.style.display = "flex";
+    lightboxImg.src = src;
   }
 
-  fileInput.click();
-};
+  window.closeLightbox = function () {
+    lightbox.style.display = "none";
+  };
 
-fileInput.onchange = async () => {
-  const album = albumSelect.value;
-  const files = [...fileInput.files];
-
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-    formData.append("folder", album);
-
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      { method: "POST", body: formData }
-    );
-
-    const data = await res.json();
-    addImage(data.secure_url);
-  }
-
-  fileInput.value = "";
-};
-
-function addAlbum(name) {
-  if (albums[name]) return;
-  albums[name] = true;
-
-  const opt = document.createElement("option");
-  opt.value = name;
-  opt.textContent = name;
-  albumSelect.appendChild(opt);
-}
-
-function addImage(url) {
-  const img = document.createElement("img");
-  img.src = url;
-  img.onclick = () => openLightbox(url);
-  gallery.prepend(img);
-}
-
-function openLightbox(url) {
-  document.getElementById("lightboxImg").src = url;
-  document.getElementById("lightbox").style.display = "flex";
-}
-
-function closeLightbox() {
-  document.getElementById("lightbox").style.display = "none";
-}
+});
