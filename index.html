@@ -1,85 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arul & Jeeva</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #f7f4ff, #e8e2ff);
-      color: #2b1b4d;
-      text-align: center;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arul & Jeeva</title>
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f7f4ff, #e8e2ff);
+    color: #2b1b4d;
+    text-align: center;
+  }
 
-    header { padding: 50px 20px 20px; }
-    h1 { margin: 0; font-weight: 500; }
-    .quote { margin-top: 10px; opacity: 0.85; font-style: italic; }
+  header {
+    padding: 50px 20px 20px;
+  }
+  h1 {
+    margin: 0;
+    font-weight: 500;
+  }
+  .quote {
+    margin-top: 10px;
+    opacity: 0.85;
+    font-style: italic;
+  }
 
-    #upload-section {
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    #upload-section input, button {
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button { background:#8a6cff; color:white; border:none; cursor:pointer; }
-    button:active { transform: scale(0.97); }
+  /* Spiritual image */
+  #spiritual {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+  }
+  #spiritual img {
+    max-width: 90%;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  }
 
-    #album-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    #album-gallery img {
-      width: 100%;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-    #album-gallery p { margin:5px 0 0; font-weight:500; }
+  /* Upload section */
+  #upload-section {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  #upload-section input, button {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  button {
+    background:#8a6cff; color:white; border:none; cursor:pointer;
+  }
+  button:active { transform: scale(0.97); }
 
-    #photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-    #photo-grid img {
-      width: 100%;
-      border-radius: 12px;
-      cursor: pointer;
-    }
+  /* Album grid */
+  #album-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  #album-gallery div {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(255,255,255,0.9);
+    transition: transform 0.2s;
+  }
+  #album-gallery div:hover { transform: scale(1.02); }
+  #album-gallery img {
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  #album-gallery p {
+    margin: 8px 0 0;
+    font-weight: 500;
+  }
 
-    #backBtn {
-      margin: 10px;
-      padding: 10px 20px;
-      border-radius: 999px;
-      border:none;
-      background:#6f52ff;
-      color:white;
-      cursor:pointer;
-    }
+  /* Photo grid */
+  #photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+    gap: 15px;
+    padding: 20px;
+  }
+  #photo-grid img {
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+  }
 
-    #lightbox {
-      display:none;
-      position: fixed;
-      inset:0;
-      background: rgba(0,0,0,0.85);
-      justify-content:center;
-      align-items:center;
-      z-index:999;
-    }
-    #lightbox img { max-width:95%; max-height:95%; border-radius:16px; }
-  </style>
+  #backBtn {
+    margin: 10px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border:none;
+    background:#6f52ff;
+    color:white;
+    cursor:pointer;
+  }
+
+  /* Lightbox */
+  #lightbox {
+    display:none;
+    position: fixed;
+    inset:0;
+    background: rgba(0,0,0,0.85);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+  }
+  #lightbox img { max-width:95%; max-height:95%; border-radius:16px; }
+</style>
 </head>
 <body>
 
@@ -88,23 +126,34 @@
   <p class="quote">Every shared moment is a meditation, a bridge connecting our inner worlds.</p>
 </header>
 
+<!-- Spiritual image -->
+<section id="spiritual">
+  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual Connection" />
+</section>
+
+<!-- Upload section -->
 <section id="upload-section">
   <input type="text" id="momentName" placeholder="Enter Moment Name" />
   <input type="file" id="fileInput" accept="image/*" multiple />
   <button id="uploadBtn">📸 Upload Memory</button>
 </section>
 
+<!-- Album gallery -->
 <section id="album-gallery"></section>
+
+<!-- Photo grid -->
 <section id="photo-grid" style="display:none;"></section>
 <button id="backBtn" style="display:none;">⬅ Back to Albums</button>
 
+<!-- Lightbox -->
 <div id="lightbox">
   <img id="lightboxImg" />
 </div>
 
 <script>
-  const CLOUD_NAME = "YOUR_CLOUD_NAME"; // Replace with your Cloudinary name
-  const UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET"; // Replace with your unsigned preset
+  // ======= CONFIG =======
+  const CLOUD_NAME = "dtamlqfx3";
+  const UPLOAD_PRESET = "aruljeeva";
 
   const albumGallery = document.getElementById("album-gallery");
   const photoGrid = document.getElementById("photo-grid");
@@ -112,10 +161,10 @@
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
 
-  // Load albums from JSON
+  // ===== Load albums from albums.json =====
   async function loadAlbums() {
     try {
-      const res = await fetch("albums.json"); // Your static JSON in repo
+      const res = await fetch("albums.json");
       const albums = await res.json();
       albumGallery.innerHTML = "";
       albums.forEach(album => {
@@ -127,6 +176,7 @@
     } catch(err) { console.error("Failed to load albums:", err); }
   }
 
+  // ===== Open album =====
   function openAlbum(album) {
     albumGallery.style.display = "none";
     photoGrid.style.display = "grid";
@@ -146,9 +196,10 @@
     albumGallery.style.display = "grid";
   };
 
+  // ===== Lightbox =====
   lightbox.addEventListener("click", () => { lightbox.style.display = "none"; });
 
-  // Upload photos
+  // ===== Upload photos to Cloudinary =====
   document.getElementById("uploadBtn").addEventListener("click", async () => {
     const momentName = document.getElementById("momentName").value.trim() || "Default";
     const files = document.getElementById("fileInput").files;
