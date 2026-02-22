@@ -1,91 +1,97 @@
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: radial-gradient(
-    circle at top,
-    #f7f4ff,
-    #e9ddff,
-    #d6c2ff,
-    #c5b0ff
-  );
-  min-height: 100vh;
-  color: #2b1b4d;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
+  color: white;
   text-align: center;
 }
 
 header {
-  padding: 40px 20px 20px;
+  padding: 60px 20px 30px 20px;
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin-bottom: 10px;
+  letter-spacing: 2px;
 }
 
 .quote {
-  font-size: 1.1rem;
-  opacity: 0.85;
-  max-width: 500px;
-  margin: 0 auto;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+#spiritual {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+#spiritual img {
+  max-width: 90%;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  animation: fadeIn 2s ease-in-out;
 }
 
 #gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 40px;
 }
 
 #gallery img {
   width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: 12px;
+  border-radius: 15px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
 }
 
 #gallery img:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
 #upload-section {
-  padding: 30px 20px 50px;
-}
-
-select {
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 10px;
+  margin: 30px;
 }
 
 button {
-  padding: 14px 26px;
-  font-size: 1rem;
-  border-radius: 14px;
+  padding: 12px 25px;
   border: none;
-  cursor: pointer;
-  background: linear-gradient(135deg, #8a6cff, #b899ff);
+  border-radius: 25px;
+  background: #ff6ec4;
+  background: linear-gradient(45deg, #ff6ec4, #7873f5);
   color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
-  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 #lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
   display: none;
-  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
   justify-content: center;
-  z-index: 10;
+  align-items: center;
 }
 
 #lightbox img {
-  max-width: 95%;
-  max-height: 95%;
-  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
