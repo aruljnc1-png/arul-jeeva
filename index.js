@@ -1,60 +1,164 @@
-const express = require("express");
-const cloudinary = require("cloudinary").v2;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arul & Jeeva</title>
 
-const app = express();
+<style>
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,sans-serif; background:linear-gradient(135deg,#f7f4ff,#e8e2ff); color:#2b1b4d; text-align:center;}
+header {padding:50px 20px 20px;}
+h1 {margin:0; font-weight:500;}
+.quote {margin-top:10px; opacity:0.85; font-style:italic;}
 
-/**
- * HARD CORS (works reliably on Vercel)
- */
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+#spiritual {display:flex; justify-content:center; margin:30px 0;}
+#spiritual img {max-width:90%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.15);}
 
-  // preflight
-  if (req.method === "OPTIONS") return res.status(200).end();
-  next();
-});
+#upload-section {padding:20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:center;}
+#upload-section input, button {padding:12px; border-radius:12px; border:1px solid #ccc; font-size:16px;}
+button {background:#8a6cff; color:white; border:none; cursor:pointer;}
+button:active {transform:scale(0.97);}
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_KEY,
-  api_secret: process.env.CLOUD_SECRET
-});
+#album-gallery {display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px; padding:20px;}
+#album-gallery div {border:1px solid #ccc; border-radius:12px; padding:10px; background:rgba(255,255,255,0.9); transition:transform 0.2s; cursor:pointer;}
+#album-gallery div:hover {transform:scale(1.02);}
+#album-gallery img {width:100%; border-radius:12px;}
+#album-gallery p {margin:8px 0 0; font-weight:500; word-break:break-word;}
 
-// Root health check (optional)
-app.get("/", (req, res) => {
-  res.send("OK - backend running. Try /albums");
-});
+#photo-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; padding:20px;}
+#photo-grid img {width:100%; border-radius:12px; cursor:pointer;}
 
-// Albums endpoint
-app.get("/albums", async (req, res) => {
-  try {
-    const result = await cloudinary.api.sub_folders("/");
-    const folders = result.folders || [];
+#backBtn {margin:10px; padding:10px 20px; border-radius:999px; border:none; background:#6f52ff; color:white; cursor:pointer;}
 
-    const albums = await Promise.all(
-      folders.map(async (folder) => {
-        const resources = await cloudinary.api.resources({
-          type: "upload",
-          prefix: folder.path + "/",
-          max_results: 500
-        });
+#lightbox {display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999;}
+#lightbox img {max-width:95%; max-height:95%; border-radius:16px;}
 
-        const items = resources.resources || [];
-        return {
-          name: folder.name,
-          thumbnail: items[0]?.secure_url || "",
-          photos: items.map((r) => r.secure_url)
-        };
-      })
-    );
+@media(max-width:600px){
+  #album-gallery, #photo-grid {grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
+}
+</style>
+</head>
 
-    res.json(albums);
-  } catch (err) {
-    console.error("Error fetching albums:", err);
-    res.status(200).json([]); // never crash the frontend
+<body>
+
+<header>
+  <h1>Arul & Jeeva</h1>
+  <p class="quote">Every shared moment is a meditation, a bridge connecting our inner worlds.</p>
+</header>
+
+<!-- Spiritual image stays visible always -->
+<section id="spiritual">
+  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual Connection" />
+</section>
+
+<section id="upload-section">
+  <input type="text" id="momentName" placeholder="Enter Moment Name" />
+  <input type="file" id="fileInput" accept="image/*" multiple />
+  <button id="uploadBtn">📸 Upload Memory</button>
+</section>
+
+<section id="album-gallery"></section>
+<section id="photo-grid" style="display:none;"></section>
+<button id="backBtn" style="display:none;">⬅ Back to Albums</button>
+
+<div id="lightbox">
+  <img id="lightboxImg" />
+</div>
+
+<script>
+const CLOUD_NAME = "dtamlqfx3";
+const UPLOAD_PRESET = "aruljeeva";
+const BACKEND_URL = "https://arul-jeeva.vercel.app/albums";
+
+const albumGallery = document.getElementById("album-gallery");
+const photoGrid = document.getElementById("photo-grid");
+const backBtn = document.getElementById("backBtn");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+
+async function loadAlbums(){
+  // cache-bust so Cloudflare/browser won’t serve stale JSON
+  const url = BACKEND_URL + "?t=" + Date.now();
+
+  const res = await fetch(url, { cache: "no-store" });
+  const albums = await res.json();
+
+  albumGallery.innerHTML = "";
+
+  albums.forEach(album => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <img src="${album.thumbnail || "https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png"}" />
+      <p>${album.name}</p>
+    `;
+    div.onclick = () => openAlbum(album);
+    albumGallery.appendChild(div);
+  });
+}
+
+function openAlbum(album){
+  albumGallery.style.display = "none";
+  photoGrid.style.display = "grid";
+  backBtn.style.display = "inline-block";
+  photoGrid.innerHTML = "";
+
+  (album.photos || []).forEach(url => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.onclick = () => {
+      lightbox.style.display = "flex";
+      lightboxImg.src = url;
+    };
+    photoGrid.appendChild(img);
+  });
+}
+
+backBtn.onclick = () => {
+  photoGrid.style.display = "none";
+  backBtn.style.display = "none";
+  albumGallery.style.display = "grid";
+};
+
+lightbox.onclick = () => {
+  lightbox.style.display = "none";
+};
+
+document.getElementById("uploadBtn").onclick = async () => {
+  const momentName = document.getElementById("momentName").value.trim() || "Default";
+  const files = document.getElementById("fileInput").files;
+
+  if(!files.length){
+    alert("Select photos first");
+    return;
   }
-});
 
-module.exports = app;
+  for(const file of files){
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("folder", momentName);
+
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    if(!r.ok){
+      const t = await r.text().catch(()=> "");
+      alert("Upload failed: " + r.status + " " + t.slice(0,200));
+      return;
+    }
+  }
+
+  alert("Upload complete! Updating albums…");
+  document.getElementById("fileInput").value = "";
+  document.getElementById("momentName").value = "";
+
+  await loadAlbums();
+};
+
+loadAlbums();
+</script>
+
+</body>
+</html>
