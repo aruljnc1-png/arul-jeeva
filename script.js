@@ -10,33 +10,26 @@ document.addEventListener("DOMContentLoaded", () => {
     fileInput.click();
   });
 
-  fileInput.addEventListener("change", function () {
-    const files = this.files;
-
-    for (let i = 0; i < files.length; i++) {
+  fileInput.addEventListener("change", () => {
+    Array.from(fileInput.files).forEach(file => {
       const reader = new FileReader();
-
-      reader.onload = function (e) {
+      reader.onload = e => {
         const img = document.createElement("img");
         img.src = e.target.result;
-        img.onclick = () => openLightbox(img.src);
+        img.onclick = () => {
+          lightbox.style.display = "flex";
+          lightboxImg.src = img.src;
+        };
         gallery.appendChild(img);
       };
+      reader.readAsDataURL(file);
+    });
 
-      reader.readAsDataURL(files[i]);
-    }
-
-    // reset so same photo can be re-selected
     fileInput.value = "";
   });
 
-  function openLightbox(src) {
-    lightbox.style.display = "flex";
-    lightboxImg.src = src;
-  }
-
-  window.closeLightbox = function () {
+  lightbox.addEventListener("click", () => {
     lightbox.style.display = "none";
-  };
+  });
 
 });
