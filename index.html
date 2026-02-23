@@ -41,6 +41,22 @@ header{ text-align:center; padding:18px; }
   display:block;
 }
 
+/* New: message + counter */
+.cosmicMessage{
+  text-align:center;
+  margin-top:18px;
+  font-size:18px;
+  font-weight:650;
+  color:rgba(255,255,255,.92);
+}
+.loveCounter{
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+  color:rgba(255,255,255,.65);
+  line-height:1.5;
+}
+
 main{ max-width:1100px; margin:auto; padding:18px; }
 
 .grid{
@@ -62,7 +78,7 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 
 .albumThumb{
   width:100%;
-  height:120px;              /* smaller thumb */
+  height:120px;
   border-radius:12px;
   overflow:hidden;
   margin-bottom:8px;
@@ -83,7 +99,7 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 }
 
 .cardTitle{
-  font-weight:900;          /* single bold name */
+  font-weight:900;
   font-size:14px;
 }
 
@@ -173,6 +189,12 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 
 <section class="hero">
   <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual">
+
+  <div class="cosmicMessage">
+    From the moment our paths crossed, time began to remember itself.
+  </div>
+
+  <div id="loveCounter" class="loveCounter"></div>
 </section>
 
 <main>
@@ -233,11 +255,79 @@ const lightboxVideo = document.getElementById("lightboxVideo");
 
 let currentAlbum = null;
 
-// Lightbox behavior: click outside closes, clicking content doesn't.
+// Close lightbox when clicking outside content
 lightbox.addEventListener("click", () => closeLightbox());
 lightboxContent.addEventListener("click", (e) => e.stopPropagation());
 lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
 
+// --- Exact time elapsed since first meeting (23-Feb-2023) ---
+const firstMeeting = new Date(2023, 1, 23, 0, 0, 0); // local time: Feb is 1
+const counterEl = document.getElementById("loveCounter");
+
+function pad2(n){ return String(n).padStart(2, "0"); }
+
+function addMonths(date, months){
+  const d = new Date(date.getTime());
+  const origDay = d.getDate();
+  d.setMonth(d.getMonth() + months);
+
+  // If month overflow adjusted day (e.g. 31st), clamp to last day of target month
+  if (d.getDate() !== origDay) {
+    d.setDate(0); // last day of previous month
+  }
+  return d;
+}
+
+function computeYMDHMS(from, to){
+  if (to < from) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
+
+  // Years
+  let years = to.getFullYear() - from.getFullYear();
+  let anchor = new Date(from.getTime());
+  anchor.setFullYear(from.getFullYear() + years);
+
+  if (anchor > to) {
+    years--;
+    anchor = new Date(from.getTime());
+    anchor.setFullYear(from.getFullYear() + years);
+  }
+
+  // Months
+  let months = (to.getMonth() - anchor.getMonth()) + 12 * (to.getFullYear() - anchor.getFullYear());
+  let anchor2 = addMonths(anchor, months);
+
+  if (anchor2 > to) {
+    months--;
+    anchor2 = addMonths(anchor, months);
+  }
+
+  // Remaining milliseconds -> days/hours/min/sec
+  let ms = to - anchor2;
+  const dayMs = 24*60*60*1000;
+  const hourMs = 60*60*1000;
+  const minMs = 60*1000;
+
+  const days = Math.floor(ms / dayMs); ms -= days * dayMs;
+  const hours = Math.floor(ms / hourMs); ms -= hours * hourMs;
+  const minutes = Math.floor(ms / minMs); ms -= minutes * minMs;
+  const seconds = Math.floor(ms / 1000);
+
+  return { years, months, days, hours, minutes, seconds };
+}
+
+function updateLoveCounter(){
+  const now = new Date();
+  const t = computeYMDHMS(firstMeeting, now);
+
+  counterEl.innerHTML =
+    `<div><b>${t.years}</b> years, <b>${t.months}</b> months, <b>${t.days}</b> days</div>` +
+    `<div><b>${pad2(t.hours)}</b> hours, <b>${pad2(t.minutes)}</b> minutes, <b>${pad2(t.seconds)}</b> seconds since our first meeting</div>`;
+}
+
+updateLoveCounter();
+setInterval(updateLoveCounter, 1000);
+
+// --- App logic ---
 function showAlbums(){
   imagesView.classList.add("hidden");
   albumsView.classList.remove("hidden");
@@ -292,7 +382,7 @@ async function loadAlbums(){
     card.appendChild(title);
     albumsGrid.appendChild(card);
 
-    // Load thumbnail async (safe, no IDs/attributes with spaces)
+    // Load thumbnail safely
     try{
       const item = await getThumbItem(album.path);
       if(!item){
@@ -303,19 +393,18 @@ async function loadAlbums(){
       const url = item.secure_url || "";
       const isVideo = item.resource_type === "video" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
+      thumb.innerHTML = "";
       if(isVideo){
         const v = document.createElement("video");
         v.src = url;
         v.muted = true;
         v.playsInline = true;
         v.preload = "metadata";
-        thumb.innerHTML = "";
         thumb.appendChild(v);
       }else{
         const img = document.createElement("img");
         img.src = url;
         img.loading = "lazy";
-        thumb.innerHTML = "";
         thumb.appendChild(img);
       }
     }catch(e){
@@ -381,7 +470,6 @@ function openLightbox(url, type){
 function closeLightbox(){
   lightbox.classList.add("hidden");
 
-  // stop + clear to avoid audio continuing
   lightboxVideo.pause();
   lightboxVideo.removeAttribute("src");
   lightboxVideo.load();
