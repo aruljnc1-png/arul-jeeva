@@ -1,375 +1,540 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Arul & Jeeva — Albums</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Arul & Jeeva</title>
 
-  <style>
-    :root{
-      --bg:#0b0b12;
-      --card:rgba(255,255,255,.08);
-      --card2:rgba(255,255,255,.12);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --border:rgba(255,255,255,.14);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(900px 500px at 20% 10%, rgba(140, 70, 255, 0.25), transparent 60%),
-        radial-gradient(900px 500px at 80% 20%, rgba(0, 220, 255, 0.18), transparent 60%),
-        radial-gradient(1000px 600px at 50% 90%, rgba(255, 70, 180, 0.14), transparent 60%),
-        var(--bg);
-      min-height:100vh;
-    }
-    header{
-      position:sticky; top:0; z-index:10;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:14px 18px;
-      border-bottom:1px solid var(--border);
-      background:rgba(10,10,18,.75);
-      backdrop-filter:blur(10px);
-    }
-    .brand-title{font-weight:900; letter-spacing:.2px}
-    .brand-sub{font-size:12px; color:var(--muted); margin-top:2px}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
-    .btn{
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.10);
-      color:var(--text);
-      cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-    .btn:hover{background:rgba(255,255,255,.14)}
-    .btn.ghost{background:transparent; box-shadow:none}
-    .uploadLabel{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.10);
-      cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-    .uploadLabel:hover{background:rgba(255,255,255,.14)}
-    .uploadLabel input{display:none}
+<style>
 
-    main{max-width:1100px; margin:0 auto; padding:18px}
-    .status{
-      margin:10px 0 16px;
-      padding:12px 14px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:rgba(255,255,255,.08);
-      color:var(--muted);
-      text-align:left;
-      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:12px;
-      white-space:pre-wrap;
-    }
-    h2{margin:16px 0 10px; font-size:20px}
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(1,minmax(0,1fr));
-      gap:12px;
-    }
-    @media(min-width:520px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
-    @media(min-width:900px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
+:root{
+  --bg:#0b0b12;
+  --card:rgba(255,255,255,.08);
+  --card2:rgba(255,255,255,.12);
+  --text:rgba(255,255,255,.92);
+  --muted:rgba(255,255,255,.65);
+  --border:rgba(255,255,255,.14);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
 
-    .cardBtn{
-      text-align:left;
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:var(--card);
-      padding:14px;
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      transition:transform .12s ease, background .12s ease;
-      color:var(--text);
-    }
-    .cardBtn:hover{transform:translateY(-2px); background:var(--card2)}
-    .cardTitle{font-weight:900}
-    .cardSub{margin-top:6px; font-size:12px; color:var(--muted)}
+*{box-sizing:border-box}
 
-    .imagesGrid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-    }
-    @media(min-width:700px){ .imagesGrid{grid-template-columns:repeat(3,minmax(0,1fr));} }
-    @media(min-width:1000px){ .imagesGrid{grid-template-columns:repeat(4,minmax(0,1fr));} }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 20% 10%, rgba(140, 70, 255, 0.25), transparent 60%),
+    radial-gradient(900px 500px at 80% 20%, rgba(0, 220, 255, 0.18), transparent 60%),
+    radial-gradient(1000px 600px at 50% 90%, rgba(255, 70, 180, 0.14), transparent 60%),
+    var(--bg);
+  min-height:100vh;
+}
 
-    .imgCard{
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      background:var(--card);
-      box-shadow:var(--shadow);
-    }
-    .imgCard img, .imgCard video{
-      width:100%; height:220px; object-fit:cover; display:block;
-      background:#000;
-    }
-    .hidden{display:none !important}
+header{
+  text-align:center;
+  padding:18px;
+}
 
-    .hero{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px;
-    }
-    .hero img{
-      width:100%;
-      border-radius:18px;
-      border:1px solid var(--border);
-      box-shadow:var(--shadow);
-      display:block;
-    }
-  </style>
+.brand-title{
+  font-size:28px;
+  font-weight:900;
+}
+
+.brand-sub{
+  font-size:14px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.hero{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
+
+.hero img{
+  width:100%;
+  border-radius:18px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
+
+h2{
+  margin-bottom:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+}
+
+.cardBtn{
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:var(--card);
+  padding:12px;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:.15s;
+}
+
+.cardBtn:hover{
+  transform:translateY(-3px);
+  background:var(--card2);
+}
+
+.albumThumb{
+  width:100%;
+  height:180px;
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:10px;
+  border:1px solid var(--border);
+}
+
+.albumThumb img,
+.albumThumb video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.cardTitle{
+  font-weight:800;
+}
+
+.cardSub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.imagesGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;
+}
+
+.imgCard{
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+
+.imgCard img,
+.imgCard video{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+
+.hidden{
+  display:none;
+}
+
+.actionsBottom{
+  margin-top:20px;
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+}
+
+.uploadLabel{
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--card);
+  cursor:pointer;
+}
+
+.uploadLabel input{
+  display:none;
+}
+
+.status{
+  margin-top:14px;
+  text-align:center;
+  color:var(--muted);
+}
+
+</style>
 </head>
 
-<body>
-<header>
-  <div>
-    <div class="brand-title">Arul & Jeeva</div>
-    <div class="brand-sub">
-      Every shared moment is a meditation, a bridge connecting our inner worlds.
-    </div>
-  </div>
 
-  <div class="actions">
-    <button id="backBtn" class="btn ghost hidden">← Back</button>
-    <button id="newAlbumBtn" class="btn">+ New Album</button>
-    <label class="uploadLabel" title="Upload photos/videos to the selected album">
-      ⬆ Upload
-      <input id="fileInput" type="file" accept="image/*,video/*" multiple />
-    </label>
-    <button id="refreshBtn" class="btn">Refresh</button>
-  </div>
+<body>
+
+
+<header>
+
+<div class="brand-title">
+Arul & Jeeva
+</div>
+
+<div class="brand-sub">
+Every shared moment is a meditation, a bridge connecting our inner worlds.
+</div>
+
 </header>
 
+
 <section class="hero">
-  <img
-    src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png"
-    alt="Spiritual"
-  />
+
+<img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png">
+
 </section>
 
+
+
 <main>
-  <div id="status" class="status">Loading…</div>
 
-  <section id="albumsView">
-    <h2>Albums</h2>
-    <div id="albumsGrid" class="grid"></div>
-  </section>
+<section id="albumsView">
 
-  <section id="imagesView" class="hidden">
-    <h2 id="albumTitle"></h2>
-    <div id="imagesGrid" class="imagesGrid"></div>
-  </section>
+<h2>Albums</h2>
+
+<div id="albumsGrid" class="grid"></div>
+
+</section>
+
+
+<section id="imagesView" class="hidden">
+
+<button onclick="goBack()" class="btn">
+← Back
+</button>
+
+<h2 id="albumTitle"></h2>
+
+<div id="imagesGrid" class="imagesGrid"></div>
+
+</section>
+
+
+<div class="actionsBottom">
+
+<button onclick="createAlbum()" class="btn">
++ New Album
+</button>
+
+<label class="uploadLabel">
+Upload
+<input id="fileInput" type="file" multiple accept="image/*,video/*">
+</label>
+
+<button onclick="loadAlbums()" class="btn">
+Refresh
+</button>
+
+</div>
+
+
+<div id="status" class="status"></div>
+
 </main>
 
+
+
 <script>
-  // Production backend
-  const API_BASE = "https://arul-jeeva.vercel.app";
 
-  const statusEl = document.getElementById("status");
-  const albumsView = document.getElementById("albumsView");
-  const imagesView = document.getElementById("imagesView");
-  const albumsGrid = document.getElementById("albumsGrid");
-  const imagesGrid = document.getElementById("imagesGrid");
-  const albumTitle = document.getElementById("albumTitle");
+const API_BASE =
+"https://arul-jeeva.vercel.app";
 
-  const refreshBtn = document.getElementById("refreshBtn");
-  const backBtn = document.getElementById("backBtn");
-  const newAlbumBtn = document.getElementById("newAlbumBtn");
-  const fileInput = document.getElementById("fileInput");
 
-  let currentAlbumPath = null;
+const albumsGrid =
+document.getElementById("albumsGrid");
 
-  function setStatus(msg) { statusEl.textContent = msg; }
+const imagesGrid =
+document.getElementById("imagesGrid");
 
-  function showAlbums() {
-    currentAlbumPath = null;
-    albumsView.classList.remove("hidden");
-    imagesView.classList.add("hidden");
-    backBtn.classList.add("hidden");
-    setStatus("Loading albums…");
-  }
+const albumTitle =
+document.getElementById("albumTitle");
 
-  function showImages(albumPath, albumName) {
-    currentAlbumPath = albumPath;
-    albumsView.classList.add("hidden");
-    imagesView.classList.remove("hidden");
-    backBtn.classList.remove("hidden");
-    albumTitle.textContent = albumName || albumPath;
-  }
+const albumsView =
+document.getElementById("albumsView");
 
-  async function loadAlbums() {
-    showAlbums();
-    albumsGrid.innerHTML = "";
+const imagesView =
+document.getElementById("imagesView");
 
-    try {
-      const res = await fetch(`${API_BASE}/api/albums`, { cache: "no-store" });
-      const data = await res.json();
+const status =
+document.getElementById("status");
 
-      if (!data.ok) {
-        setStatus(`Albums error: ${data.detail || data.error || "Unknown"}`);
-        return;
-      }
+const fileInput =
+document.getElementById("fileInput");
 
-      if (!data.albums || data.albums.length === 0) {
-        setStatus("No albums found.");
-        return;
-      }
 
-      setStatus(`Loaded ${data.albums.length} albums.`);
+let currentAlbum = null;
 
-      for (const a of data.albums) {
-        const btn = document.createElement("button");
-        btn.className = "cardBtn";
-        btn.type = "button";
-        btn.innerHTML = `
-          <div class="cardTitle">${a.name}</div>
-          <div class="cardSub">${a.path}</div>
-        `;
-        btn.addEventListener("click", () => openAlbum(a.path, a.name));
-        albumsGrid.appendChild(btn);
-      }
-    } catch (e) {
-      setStatus(`FETCH FAILED: ${e.message}`);
-    }
-  }
 
-  async function openAlbum(albumPath, albumName) {
-    showImages(albumPath, albumName);
-    imagesGrid.innerHTML = "";
-    setStatus(`Loading images for: ${albumPath}`);
 
-    try {
-      const url = new URL(`${API_BASE}/api/images`);
-      url.searchParams.set("album", albumPath);
-      url.searchParams.set("max", "80");
+function setStatus(msg){
+status.textContent = msg || "";
+}
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
-      const data = await res.json();
 
-      if (!data.ok) {
-        setStatus(`Images error: ${data.detail || data.error || "Unknown"}`);
-        return;
-      }
 
-      const items = data.images || [];
-      setStatus(`Loaded ${items.length} items from: ${albumPath}`);
+function goBack(){
 
-      for (const item of items) {
-        const card = document.createElement("div");
-        card.className = "imgCard";
+imagesView.classList.add("hidden");
 
-        const url = item.secure_url || "";
-        const isVideo =
-          item.resource_type === "video" ||
-          /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
+albumsView.classList.remove("hidden");
 
-        card.innerHTML = isVideo
-          ? `<video src="${url}" controls preload="metadata"></video>`
-          : `<img src="${url}" loading="lazy" alt="" />`;
+currentAlbum = null;
 
-        imagesGrid.appendChild(card);
-      }
-    } catch (e) {
-      setStatus(`FETCH FAILED: ${e.message}`);
-    }
-  }
+}
 
-  async function createAlbumFlow() {
-    const name = prompt("New album name (example: Valentines 2027):");
-    if (!name) return;
 
-    // We rely on first upload to create the folder in Cloudinary
-    setStatus(`New album selected: ${name}\nNow upload files to create it.`);
-    currentAlbumPath = name.trim();
-    showImages(currentAlbumPath, currentAlbumPath);
-    imagesGrid.innerHTML = "";
-  }
 
-  async function uploadFiles(files) {
-    if (!files || files.length === 0) return;
+async function getAlbumThumb(path){
 
-    if (!currentAlbumPath) {
-      setStatus("Select an album first (click an album), then upload.");
-      return;
-    }
+const url =
+`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=1`;
 
-    setStatus(`Preparing upload for album: ${currentAlbumPath}`);
+const res =
+await fetch(url);
 
-    // Get signature from backend
-    let sig;
-    try {
-      const res = await fetch(`${API_BASE}/api/upload`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ albumName: currentAlbumPath }),
-      });
-      sig = await res.json();
-      if (!sig.ok) {
-        setStatus(`Upload signature error: ${sig.detail || sig.error || "Unknown"}`);
-        return;
-      }
-    } catch (e) {
-      setStatus(`Signature fetch failed: ${e.message}`);
-      return;
-    }
+const data =
+await res.json();
 
-    // Direct upload to Cloudinary
-    let done = 0;
-    for (const file of files) {
-      done++;
-      setStatus(`Uploading ${done}/${files.length}: ${file.name}`);
+if(!data.ok || !data.images.length)
+return null;
 
-      const form = new FormData();
-      form.append("file", file);
-      form.append("api_key", sig.apiKey);
-      form.append("timestamp", sig.timestamp);
-      form.append("signature", sig.signature);
-      form.append("folder", sig.folder);
+return data.images[0];
 
-      const cloudUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`;
+}
 
-      const upRes = await fetch(cloudUrl, { method: "POST", body: form });
-      const out = await upRes.json();
 
-      if (!upRes.ok) {
-        setStatus(`Upload failed: ${out?.error?.message || "Unknown error"}`);
-        return;
-      }
-    }
 
-    setStatus(`Upload complete. Refreshing album…`);
-    await openAlbum(currentAlbumPath, currentAlbumPath);
-  }
+async function loadAlbums(){
 
-  refreshBtn.addEventListener("click", () => {
-    if (currentAlbumPath) openAlbum(currentAlbumPath, currentAlbumPath);
-    else loadAlbums();
-  });
+setStatus("");
 
-  backBtn.addEventListener("click", loadAlbums);
-  newAlbumBtn.addEventListener("click", createAlbumFlow);
+albumsGrid.innerHTML = "";
 
-  fileInput.addEventListener("change", async (e) => {
-    const files = Array.from(e.target.files || []);
-    e.target.value = "";
-    await uploadFiles(files);
-  });
+imagesView.classList.add("hidden");
 
-  loadAlbums();
+albumsView.classList.remove("hidden");
+
+const res =
+await fetch(`${API_BASE}/api/albums`);
+
+const data =
+await res.json();
+
+if(!data.ok){
+setStatus("Failed to load albums");
+return;
+}
+
+
+for(const album of data.albums){
+
+const card =
+document.createElement("div");
+
+card.className = "cardBtn";
+
+card.onclick =
+()=>openAlbum(album.path);
+
+
+card.innerHTML =
+`
+<div class="albumThumb" id="thumb-${album.path}"></div>
+
+<div class="cardTitle">${album.name}</div>
+
+<div class="cardSub">${album.path}</div>
+`;
+
+albumsGrid.appendChild(card);
+
+
+const thumb =
+await getAlbumThumb(album.path);
+
+const holder =
+document.getElementById(`thumb-${album.path}`);
+
+if(thumb){
+
+if(thumb.resource_type==="video"){
+
+holder.innerHTML =
+`<video src="${thumb.secure_url}" muted></video>`;
+
+}
+else{
+
+holder.innerHTML =
+`<img src="${thumb.secure_url}">`;
+
+}
+
+}
+
+}
+
+}
+
+
+
+async function openAlbum(path){
+
+currentAlbum = path;
+
+albumTitle.textContent = path;
+
+albumsView.classList.add("hidden");
+
+imagesView.classList.remove("hidden");
+
+imagesGrid.innerHTML = "";
+
+const res =
+await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=100`);
+
+const data =
+await res.json();
+
+if(!data.ok){
+
+setStatus("Failed to fetch images");
+
+return;
+
+}
+
+
+for(const img of data.images){
+
+const card =
+document.createElement("div");
+
+card.className="imgCard";
+
+
+if(img.resource_type==="video"){
+
+card.innerHTML =
+`<video src="${img.secure_url}" controls></video>`;
+
+}
+else{
+
+card.innerHTML =
+`<img src="${img.secure_url}">`;
+
+}
+
+imagesGrid.appendChild(card);
+
+}
+
+}
+
+
+
+async function createAlbum(){
+
+const name =
+prompt("Album name:");
+
+if(!name)
+return;
+
+currentAlbum = name;
+
+setStatus("Album created. Upload files.");
+
+}
+
+
+
+fileInput.onchange =
+async function(){
+
+if(!currentAlbum){
+
+setStatus("Select album first");
+
+return;
+
+}
+
+
+const sigRes =
+await fetch(`${API_BASE}/api/upload`,{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+albumName:currentAlbum
+})
+
+});
+
+const sig =
+await sigRes.json();
+
+
+for(const file of fileInput.files){
+
+const form =
+new FormData();
+
+form.append("file",file);
+
+form.append("api_key",sig.apiKey);
+
+form.append("timestamp",sig.timestamp);
+
+form.append("signature",sig.signature);
+
+form.append("folder",sig.folder);
+
+await fetch(
+`https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`,
+{
+method:"POST",
+body:form
+}
+);
+
+}
+
+
+setStatus("Upload complete");
+
+openAlbum(currentAlbum);
+
+};
+
+
+
+loadAlbums();
+
 </script>
+
+
 </body>
 </html>
