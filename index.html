@@ -4,16 +4,53 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arul & Jeeva</title>
+
 <style>
-  body{margin:0;font-family:Arial,sans-serif;background:#f3efff;color:#2b1b4d;text-align:center}
-  header{padding:30px 12px}
-  #spiritual img{max-width:90%;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.15)}
-  #debug{max-width:900px;margin:14px auto;padding:10px 12px;background:#fff;border:1px solid #ddd;border-radius:12px;text-align:left;font-family:monospace;font-size:12px;overflow:auto}
-  #albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;padding:16px}
-  .card{background:#fff;border:2px solid #8a6cff;border-radius:14px;padding:10px;cursor:pointer}
-  .card img{width:100%;border-radius:10px}
-  .name{margin-top:8px;font-weight:bold}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3efff;
+  color:#2b1b4d;
+  text-align:center
+}
+
+header{padding:30px 12px}
+
+#spiritual img{
+  max-width:90%;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15)
+}
+
+#debug{
+  max-width:900px;
+  margin:14px auto;
+  padding:10px 12px;
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:12px;
+  text-align:left;
+  font-family:monospace;
+  font-size:12px;
+}
+
+#albums{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  gap:14px;
+  padding:16px;
+}
+
+.card{
+  background:#fff;
+  border:2px solid #8a6cff;
+  border-radius:14px;
+  padding:16px;
+  cursor:pointer;
+  font-weight:bold;
+}
 </style>
+
 </head>
 <body>
 
@@ -23,54 +60,79 @@
 </header>
 
 <section id="spiritual">
-  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual Connection">
+  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png">
 </section>
 
 <div id="debug">Loading albums…</div>
 <div id="albums"></div>
 
 <script>
-const BACKEND = "https://arul-jeeva.vercel.app/albums";
+
+const BACKEND =
+"https://arul-jeeva-asneb99dp-aruljnc1-5923s-projects.vercel.app/api/albums";
 
 async function loadAlbums(){
+
   const debug = document.getElementById("debug");
   const albumsDiv = document.getElementById("albums");
+
   albumsDiv.innerHTML = "";
 
-  const url = BACKEND + "?t=" + Date.now();
-
   try{
-    debug.textContent = "Fetching: " + url;
 
-    const res = await fetch(url, { cache: "no-store" });
+    debug.textContent = "Fetching albums...";
 
-    debug.textContent = "HTTP " + res.status;
+    const res = await fetch(BACKEND, {
+      cache:"no-store"
+    });
 
     if(!res.ok){
-      const txt = await res.text().catch(()=> "");
-      debug.textContent = "Backend error HTTP " + res.status + " :: " + txt.slice(0,300);
+
+      debug.textContent =
+      "HTTP ERROR " + res.status;
+
       return;
     }
 
-    const albums = await res.json();
-    debug.textContent = "OK. Albums found: " + albums.length;
+    const data = await res.json();
 
-    albums.forEach(a=>{
+    if(!data.ok){
+
+      debug.textContent =
+      "Backend error: " + data.error;
+
+      return;
+    }
+
+    const albums = data.albums;
+
+    debug.textContent =
+    "Albums loaded: " + albums.length;
+
+    albums.forEach(album=>{
+
       const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <img src="${a.thumbnail}">
-        <div class="name">${a.name}</div>
-      `;
+
+      card.className="card";
+
+      card.textContent = album.name;
+
       albumsDiv.appendChild(card);
+
     });
 
-  }catch(e){
-    debug.textContent = "FETCH FAILED :: " + (e && e.message ? e.message : String(e));
   }
+  catch(e){
+
+    debug.textContent =
+    "FETCH FAILED: " + e.message;
+
+  }
+
 }
 
 loadAlbums();
+
 </script>
 
 </body>
