@@ -7,7 +7,7 @@
 
 <style>
 :root{
-  --bg:#0b0b12;
+  --bg:#050714;
   --card:rgba(255,255,255,.08);
   --card2:rgba(255,255,255,.12);
   --text:rgba(255,255,255,.92);
@@ -15,24 +15,171 @@
   --border:rgba(255,255,255,.14);
   --shadow:0 10px 30px rgba(0,0,0,.35);
 }
+
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
   background:
-    radial-gradient(900px 500px at 20% 10%, rgba(140,70,255,.25), transparent 60%),
-    radial-gradient(900px 500px at 80% 20%, rgba(0,220,255,.18), transparent 60%),
-    radial-gradient(1000px 600px at 50% 90%, rgba(255,70,180,.14), transparent 60%),
+    radial-gradient(900px 500px at 22% 12%, rgba(80, 120, 255, .35), transparent 60%),
+    radial-gradient(900px 500px at 80% 18%, rgba(0, 210, 255, .22), transparent 60%),
+    radial-gradient(1000px 600px at 55% 92%, rgba(120, 90, 255, .18), transparent 60%),
+    radial-gradient(1200px 700px at 50% 40%, rgba(10, 120, 255, .14), transparent 65%),
     var(--bg);
   min-height:100vh;
 }
 
-header{ text-align:center; padding:18px; }
-.brand-title{ font-size:28px; font-weight:900; }
-.brand-sub{ color:var(--muted); margin-top:6px; }
+/* ---------------- LOCK SCREEN ---------------- */
 
-.hero{ max-width:1100px; margin:auto; padding:18px; }
+#lockScreen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+  padding:22px;
+  background:
+    radial-gradient(900px 520px at 18% 12%, rgba(80, 150, 255, .40), transparent 62%),
+    radial-gradient(900px 520px at 82% 20%, rgba(0, 220, 255, .25), transparent 62%),
+    radial-gradient(1000px 620px at 50% 92%, rgba(110, 90, 255, .22), transparent 62%),
+    linear-gradient(180deg, rgba(5,7,20,.96), rgba(5,7,20,.92));
+  backdrop-filter: blur(10px);
+}
+
+.lockStars::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 1px, transparent 1.2px),
+    radial-gradient(circle at 60% 40%, rgba(255,255,255,.18) 1px, transparent 1.2px),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,.20) 1px, transparent 1.2px),
+    radial-gradient(circle at 30% 70%, rgba(255,255,255,.14) 1px, transparent 1.2px),
+    radial-gradient(circle at 70% 75%, rgba(255,255,255,.16) 1px, transparent 1.2px);
+  background-size: 260px 260px, 320px 320px, 280px 280px, 360px 360px, 300px 300px;
+  opacity:.55;
+  pointer-events:none;
+}
+
+.lockWrap{
+  position:relative;
+  width:min(360px, 92vw);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+
+.lockGlow{
+  position:absolute;
+  inset:-80px -80px auto -80px;
+  height:200px;
+  background: radial-gradient(closest-side, rgba(80,160,255,.45), transparent 70%);
+  filter: blur(10px);
+  opacity:.9;
+}
+
+.lockBox{
+  position:relative;
+  padding:26px 22px 22px;
+  text-align:center;
+}
+
+.lockTitle{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+.lockSubtitle{
+  margin-top:8px;
+  font-size:13px;
+  color:rgba(255,255,255,.68);
+  line-height:1.45;
+}
+
+.lockInput{
+  width:100%;
+  margin-top:16px;
+  padding:12px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.16);
+  outline:none;
+  background:rgba(0,0,0,.25);
+  color:rgba(255,255,255,.92);
+  text-align:center;
+  font-size:16px;
+}
+
+.lockBtn{
+  width:100%;
+  margin-top:12px;
+  padding:12px 12px;
+  border-radius:10px;
+  border:none;
+  background:rgba(80,150,255,.95);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+.lockBtn:hover{ filter:brightness(1.05); }
+
+.lockHint{
+  margin-top:12px;
+  font-size:12px;
+  color:rgba(255,255,255,.55);
+}
+
+.lockError{
+  margin-top:10px;
+  font-size:13px;
+  color:#ff6b6b;
+  display:none;
+}
+
+/* elegant fade */
+.fadeIn{
+  animation: fadeIn .55s ease both;
+}
+.fadeOut{
+  animation: fadeOut .45s ease both;
+}
+@keyframes fadeIn{
+  from{ opacity:0; transform: translateY(8px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+@keyframes fadeOut{
+  from{ opacity:1; transform: translateY(0); }
+  to{ opacity:0; transform: translateY(8px); }
+}
+
+/* ---------------- PAGE UI ---------------- */
+
+header{
+  text-align:center;
+  padding:18px;
+}
+
+.brand-title{
+  font-size:28px;
+  font-weight:900;
+}
+
+.brand-sub{
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.hero{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
+
 .hero img{
   width:100%;
   border-radius:18px;
@@ -41,7 +188,6 @@ header{ text-align:center; padding:18px; }
   display:block;
 }
 
-/* New: message + counter */
 .cosmicMessage{
   text-align:center;
   margin-top:18px;
@@ -49,6 +195,7 @@ header{ text-align:center; padding:18px; }
   font-weight:650;
   color:rgba(255,255,255,.92);
 }
+
 .loveCounter{
   text-align:center;
   margin-top:10px;
@@ -57,7 +204,11 @@ header{ text-align:center; padding:18px; }
   line-height:1.5;
 }
 
-main{ max-width:1100px; margin:auto; padding:18px; }
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
 
 .grid{
   display:grid;
@@ -82,7 +233,7 @@ main{ max-width:1100px; margin:auto; padding:18px; }
   border-radius:12px;
   overflow:hidden;
   margin-bottom:8px;
-  border:1px solid var(--border);
+  border:1px solid rgba(255,255,255,.14);
   background:rgba(255,255,255,.06);
   display:flex;
   align-items:center;
@@ -182,6 +333,24 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 
 <body>
 
+<!-- LOCK SCREEN -->
+<div id="lockScreen" class="fadeIn lockStars">
+  <div class="lockWrap">
+    <div class="lockGlow"></div>
+    <div class="lockBox">
+      <div class="lockTitle">Private Space</div>
+      <div class="lockSubtitle">A quiet corner of the universe — just for us.</div>
+
+      <input id="passwordInput" type="password" class="lockInput" placeholder="Enter password" inputmode="numeric" />
+
+      <button id="enterBtn" class="lockBtn">Enter</button>
+
+      <div class="lockHint">Tip: press <b>Enter</b> on your keyboard</div>
+      <div id="lockError" class="lockError">Incorrect password</div>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="brand-title">Arul & Jeeva</div>
   <div class="brand-sub">Every shared moment is a meditation, a bridge connecting our inner worlds.</div>
@@ -235,33 +404,52 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 <script>
 const API_BASE = "https://arul-jeeva.vercel.app";
 
-const albumsGrid = document.getElementById("albumsGrid");
-const imagesGrid = document.getElementById("imagesGrid");
-const albumTitle = document.getElementById("albumTitle");
-const albumsView = document.getElementById("albumsView");
-const imagesView = document.getElementById("imagesView");
-const fileInput = document.getElementById("fileInput");
+/* --------- PASSWORD (set to 1111) --------- */
+const SITE_PASSWORD = "1111";
 
-const backBtn = document.getElementById("backBtn");
-const refreshBtn = document.getElementById("refreshBtn");
-const newAlbumBtn = document.getElementById("newAlbumBtn");
+const lockScreen = document.getElementById("lockScreen");
+const passwordInput = document.getElementById("passwordInput");
+const lockError = document.getElementById("lockError");
+const enterBtn = document.getElementById("enterBtn");
 
-// Lightbox
-const lightbox = document.getElementById("lightbox");
-const lightboxContent = document.getElementById("lightboxContent");
-const lightboxClose = document.getElementById("lightboxClose");
-const lightboxImg = document.getElementById("lightboxImg");
-const lightboxVideo = document.getElementById("lightboxVideo");
+function unlockSite(){
+  const input = String(passwordInput.value || "").trim();
 
-let currentAlbum = null;
+  if(input === SITE_PASSWORD){
+    lockError.style.display = "none";
+    localStorage.setItem("siteUnlocked", "true");
 
-// Close lightbox when clicking outside content
-lightbox.addEventListener("click", () => closeLightbox());
-lightboxContent.addEventListener("click", (e) => e.stopPropagation());
-lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
+    lockScreen.classList.remove("fadeIn");
+    lockScreen.classList.add("fadeOut");
 
-// --- Exact time elapsed since first meeting (23-Feb-2023) ---
-const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // local time: Feb is 1
+    // wait for fade then hide
+    setTimeout(() => {
+      lockScreen.style.display = "none";
+    }, 450);
+
+  } else {
+    lockError.style.display = "block";
+  }
+}
+
+// Enter key to unlock
+passwordInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") unlockSite();
+});
+enterBtn.addEventListener("click", unlockSite);
+
+// Auto unlock if already unlocked
+window.addEventListener("load", () => {
+  if(localStorage.getItem("siteUnlocked") === "true"){
+    lockScreen.style.display = "none";
+  } else {
+    // focus input for convenience
+    setTimeout(() => passwordInput.focus(), 150);
+  }
+});
+
+/* --------- Counter (exact elapsed) --------- */
+const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // 23-Feb-2023 21:00
 const counterEl = document.getElementById("loveCounter");
 
 function pad2(n){ return String(n).padStart(2, "0"); }
@@ -270,38 +458,29 @@ function addMonths(date, months){
   const d = new Date(date.getTime());
   const origDay = d.getDate();
   d.setMonth(d.getMonth() + months);
-
-  // If month overflow adjusted day (e.g. 31st), clamp to last day of target month
-  if (d.getDate() !== origDay) {
-    d.setDate(0); // last day of previous month
-  }
+  if (d.getDate() !== origDay) d.setDate(0);
   return d;
 }
 
 function computeYMDHMS(from, to){
-  if (to < from) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
+  if(to < from) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
 
-  // Years
   let years = to.getFullYear() - from.getFullYear();
   let anchor = new Date(from.getTime());
   anchor.setFullYear(from.getFullYear() + years);
-
-  if (anchor > to) {
+  if(anchor > to){
     years--;
     anchor = new Date(from.getTime());
     anchor.setFullYear(from.getFullYear() + years);
   }
 
-  // Months
   let months = (to.getMonth() - anchor.getMonth()) + 12 * (to.getFullYear() - anchor.getFullYear());
   let anchor2 = addMonths(anchor, months);
-
-  if (anchor2 > to) {
+  if(anchor2 > to){
     months--;
     anchor2 = addMonths(anchor, months);
   }
 
-  // Remaining milliseconds -> days/hours/min/sec
   let ms = to - anchor2;
   const dayMs = 24*60*60*1000;
   const hourMs = 60*60*1000;
@@ -323,11 +502,35 @@ function updateLoveCounter(){
     `<div><b>${t.years}</b> years, <b>${t.months}</b> months, <b>${t.days}</b> days</div>` +
     `<div><b>${pad2(t.hours)}</b> hours, <b>${pad2(t.minutes)}</b> minutes, <b>${pad2(t.seconds)}</b> seconds since our first meeting</div>`;
 }
-
 updateLoveCounter();
 setInterval(updateLoveCounter, 1000);
 
-// --- App logic ---
+/* --------- Gallery app --------- */
+const albumsGrid = document.getElementById("albumsGrid");
+const imagesGrid = document.getElementById("imagesGrid");
+const albumTitle = document.getElementById("albumTitle");
+const albumsView = document.getElementById("albumsView");
+const imagesView = document.getElementById("imagesView");
+const fileInput = document.getElementById("fileInput");
+
+const backBtn = document.getElementById("backBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const newAlbumBtn = document.getElementById("newAlbumBtn");
+
+// Lightbox
+const lightbox = document.getElementById("lightbox");
+const lightboxContent = document.getElementById("lightboxContent");
+const lightboxClose = document.getElementById("lightboxClose");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxVideo = document.getElementById("lightboxVideo");
+
+let currentAlbum = null;
+
+// Lightbox interactions
+lightbox.addEventListener("click", () => closeLightbox());
+lightboxContent.addEventListener("click", (e) => e.stopPropagation());
+lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
+
 function showAlbums(){
   imagesView.classList.add("hidden");
   albumsView.classList.remove("hidden");
@@ -382,7 +585,6 @@ async function loadAlbums(){
     card.appendChild(title);
     albumsGrid.appendChild(card);
 
-    // Load thumbnail safely
     try{
       const item = await getThumbItem(album.path);
       if(!item){
@@ -401,13 +603,13 @@ async function loadAlbums(){
         v.playsInline = true;
         v.preload = "metadata";
         thumb.appendChild(v);
-      }else{
+      } else {
         const img = document.createElement("img");
         img.src = url;
         img.loading = "lazy";
         thumb.appendChild(img);
       }
-    }catch(e){
+    } catch(e){
       thumb.textContent = "No cover";
     }
   }
@@ -440,7 +642,7 @@ async function openAlbum(albumPath){
       v.playsInline = true;
       v.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLightbox(url, "video"); });
       card.appendChild(v);
-    }else{
+    } else {
       const img = document.createElement("img");
       img.src = url;
       img.loading = "lazy";
@@ -460,7 +662,7 @@ function openLightbox(url, type){
     lightboxVideo.classList.remove("hidden");
     lightboxVideo.src = url;
     lightboxVideo.currentTime = 0;
-  }else{
+  } else {
     lightboxVideo.classList.add("hidden");
     lightboxImg.classList.remove("hidden");
     lightboxImg.src = url;
@@ -469,21 +671,17 @@ function openLightbox(url, type){
 
 function closeLightbox(){
   lightbox.classList.add("hidden");
-
   lightboxVideo.pause();
   lightboxVideo.removeAttribute("src");
   lightboxVideo.load();
-
   lightboxImg.removeAttribute("src");
 }
 
 backBtn.addEventListener("click", () => showAlbums());
-
 refreshBtn.addEventListener("click", async () => {
   if(currentAlbum) await openAlbum(currentAlbum);
   else await loadAlbums();
 });
-
 newAlbumBtn.addEventListener("click", async () => {
   const name = prompt("Album name:");
   if(!name) return;
@@ -544,4 +742,3 @@ loadAlbums();
 
 </body>
 </html>
-
