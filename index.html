@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arul & Jeeva</title>
 
 <style>
@@ -21,14 +21,13 @@
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-family:system-ui;
   color:var(--text);
   background:
-    radial-gradient(900px 500px at 20% 10%, rgba(140, 70, 255, 0.25), transparent 60%),
-    radial-gradient(900px 500px at 80% 20%, rgba(0, 220, 255, 0.18), transparent 60%),
-    radial-gradient(1000px 600px at 50% 90%, rgba(255, 70, 180, 0.14), transparent 60%),
-    var(--bg);
-  min-height:100vh;
+  radial-gradient(900px 500px at 20% 10%, rgba(140,70,255,.25), transparent 60%),
+  radial-gradient(900px 500px at 80% 20%, rgba(0,220,255,.18), transparent 60%),
+  radial-gradient(1000px 600px at 50% 90%, rgba(255,70,180,.14), transparent 60%),
+  var(--bg);
 }
 
 header{
@@ -42,9 +41,7 @@ header{
 }
 
 .brand-sub{
-  font-size:14px;
   color:var(--muted);
-  margin-top:6px;
 }
 
 .hero{
@@ -66,10 +63,6 @@ main{
   padding:18px;
 }
 
-h2{
-  margin-bottom:12px;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
@@ -83,11 +76,9 @@ h2{
   padding:12px;
   cursor:pointer;
   box-shadow:var(--shadow);
-  transition:.15s;
 }
 
 .cardBtn:hover{
-  transform:translateY(-3px);
   background:var(--card2);
 }
 
@@ -97,7 +88,6 @@ h2{
   border-radius:14px;
   overflow:hidden;
   margin-bottom:10px;
-  border:1px solid var(--border);
 }
 
 .albumThumb img,
@@ -105,15 +95,6 @@ h2{
   width:100%;
   height:100%;
   object-fit:cover;
-}
-
-.cardTitle{
-  font-weight:800;
-}
-
-.cardSub{
-  font-size:12px;
-  color:var(--muted);
 }
 
 .imagesGrid{
@@ -133,10 +114,7 @@ h2{
   width:100%;
   height:200px;
   object-fit:cover;
-}
-
-.hidden{
-  display:none;
+  cursor:pointer;
 }
 
 .actionsBottom{
@@ -147,15 +125,7 @@ h2{
   flex-wrap:wrap;
 }
 
-.btn{
-  padding:12px 16px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--card);
-  color:var(--text);
-  cursor:pointer;
-}
-
+.btn,
 .uploadLabel{
   padding:12px 16px;
   border-radius:12px;
@@ -168,10 +138,36 @@ h2{
   display:none;
 }
 
-.status{
-  margin-top:14px;
-  text-align:center;
-  color:var(--muted);
+.hidden{
+  display:none;
+}
+
+
+/* LIGHTBOX */
+
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.lightbox img,
+.lightbox video{
+  max-width:95%;
+  max-height:95%;
+}
+
+.lightboxClose{
+  position:absolute;
+  top:20px;
+  right:30px;
+  font-size:40px;
+  color:white;
+  cursor:pointer;
 }
 
 </style>
@@ -183,9 +179,7 @@ h2{
 
 <header>
 
-<div class="brand-title">
-Arul & Jeeva
-</div>
+<div class="brand-title">Arul & Jeeva</div>
 
 <div class="brand-sub">
 Every shared moment is a meditation, a bridge connecting our inner worlds.
@@ -195,11 +189,8 @@ Every shared moment is a meditation, a bridge connecting our inner worlds.
 
 
 <section class="hero">
-
 <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png">
-
 </section>
-
 
 
 <main>
@@ -215,9 +206,7 @@ Every shared moment is a meditation, a bridge connecting our inner worlds.
 
 <section id="imagesView" class="hidden">
 
-<button onclick="goBack()" class="btn">
-← Back
-</button>
+<button onclick="goBack()" class="btn">← Back</button>
 
 <h2 id="albumTitle"></h2>
 
@@ -243,10 +232,21 @@ Refresh
 
 </div>
 
-
-<div id="status" class="status"></div>
-
 </main>
+
+
+
+<!-- LIGHTBOX -->
+
+<div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+
+<span class="lightboxClose">×</span>
+
+<img id="lightboxImg">
+
+<video id="lightboxVideo" controls class="hidden"></video>
+
+</div>
 
 
 
@@ -254,7 +254,6 @@ Refresh
 
 const API_BASE =
 "https://arul-jeeva.vercel.app";
-
 
 const albumsGrid =
 document.getElementById("albumsGrid");
@@ -271,20 +270,10 @@ document.getElementById("albumsView");
 const imagesView =
 document.getElementById("imagesView");
 
-const status =
-document.getElementById("status");
-
 const fileInput =
 document.getElementById("fileInput");
 
-
-let currentAlbum = null;
-
-
-
-function setStatus(msg){
-status.textContent = msg || "";
-}
+let currentAlbum=null;
 
 
 
@@ -294,24 +283,21 @@ imagesView.classList.add("hidden");
 
 albumsView.classList.remove("hidden");
 
-currentAlbum = null;
+currentAlbum=null;
 
 }
 
 
 
-async function getAlbumThumb(path){
+async function getThumb(path){
 
-const url =
-`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=1`;
+const res=
+await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=1`);
 
-const res =
-await fetch(url);
-
-const data =
+const data=
 await res.json();
 
-if(!data.ok || !data.images.length)
+if(!data.ok||!data.images.length)
 return null;
 
 return data.images[0];
@@ -322,66 +308,57 @@ return data.images[0];
 
 async function loadAlbums(){
 
-setStatus("");
-
-albumsGrid.innerHTML = "";
+albumsGrid.innerHTML="";
 
 imagesView.classList.add("hidden");
 
 albumsView.classList.remove("hidden");
 
-const res =
+const res=
 await fetch(`${API_BASE}/api/albums`);
 
-const data =
+const data=
 await res.json();
-
-if(!data.ok){
-setStatus("Failed to load albums");
-return;
-}
 
 
 for(const album of data.albums){
 
-const card =
+const card=
 document.createElement("div");
 
-card.className = "cardBtn";
+card.className="cardBtn";
 
-card.onclick =
-()=>openAlbum(album.path);
+card.onclick=()=>openAlbum(album.path);
 
 
-card.innerHTML =
+card.innerHTML=
 `
 <div class="albumThumb" id="thumb-${album.path}"></div>
 
-<div class="cardTitle">${album.name}</div>
-
-<div class="cardSub">${album.path}</div>
+<div>${album.name}</div>
 `;
+
 
 albumsGrid.appendChild(card);
 
 
-const thumb =
-await getAlbumThumb(album.path);
-
-const holder =
-document.getElementById(`thumb-${album.path}`);
+const thumb=
+await getThumb(album.path);
 
 if(thumb){
 
+const holder=
+document.getElementById(`thumb-${album.path}`);
+
 if(thumb.resource_type==="video"){
 
-holder.innerHTML =
-`<video src="${thumb.secure_url}" muted></video>`;
+holder.innerHTML=
+`<video src="${thumb.secure_url}"></video>`;
 
 }
 else{
 
-holder.innerHTML =
+holder.innerHTML=
 `<img src="${thumb.secure_url}">`;
 
 }
@@ -396,34 +373,26 @@ holder.innerHTML =
 
 async function openAlbum(path){
 
-currentAlbum = path;
+currentAlbum=path;
 
-albumTitle.textContent = path;
+albumTitle.textContent=path;
 
 albumsView.classList.add("hidden");
 
 imagesView.classList.remove("hidden");
 
-imagesGrid.innerHTML = "";
+imagesGrid.innerHTML="";
 
-const res =
+const res=
 await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=100`);
 
-const data =
+const data=
 await res.json();
-
-if(!data.ok){
-
-setStatus("Failed to fetch images");
-
-return;
-
-}
 
 
 for(const img of data.images){
 
-const card =
+const card=
 document.createElement("div");
 
 card.className="imgCard";
@@ -431,16 +400,17 @@ card.className="imgCard";
 
 if(img.resource_type==="video"){
 
-card.innerHTML =
-`<video src="${img.secure_url}" controls></video>`;
+card.innerHTML=
+`<video src="${img.secure_url}" onclick="openLightbox('${img.secure_url}','video')"></video>`;
 
 }
 else{
 
-card.innerHTML =
-`<img src="${img.secure_url}">`;
+card.innerHTML=
+`<img src="${img.secure_url}" onclick="openLightbox('${img.secure_url}','image')">`;
 
 }
+
 
 imagesGrid.appendChild(card);
 
@@ -450,80 +420,109 @@ imagesGrid.appendChild(card);
 
 
 
-async function createAlbum(){
+function openLightbox(url,type){
 
-const name =
-prompt("Album name:");
+const lb=
+document.getElementById("lightbox");
 
-if(!name)
-return;
+const img=
+document.getElementById("lightboxImg");
 
-currentAlbum = name;
+const vid=
+document.getElementById("lightboxVideo");
 
-setStatus("Album created. Upload files.");
+lb.classList.remove("hidden");
+
+
+if(type==="video"){
+
+img.classList.add("hidden");
+
+vid.classList.remove("hidden");
+
+vid.src=url;
+
+}
+else{
+
+vid.classList.add("hidden");
+
+img.classList.remove("hidden");
+
+img.src=url;
+
+}
 
 }
 
 
 
-fileInput.onchange =
-async function(){
+function closeLightbox(){
+
+const lb=
+document.getElementById("lightbox");
+
+const vid=
+document.getElementById("lightboxVideo");
+
+lb.classList.add("hidden");
+
+vid.pause();
+
+}
+
+
+
+async function createAlbum(){
+
+const name=prompt("Album name:");
+
+if(!name)return;
+
+currentAlbum=name;
+
+openAlbum(name);
+
+}
+
+
+
+fileInput.onchange=async function(){
 
 if(!currentAlbum){
 
-setStatus("Select album first");
+alert("Select album first");
 
 return;
 
 }
 
-
-const sigRes =
+const sigRes=
 await fetch(`${API_BASE}/api/upload`,{
-
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-albumName:currentAlbum
-})
-
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({albumName:currentAlbum})
 });
 
-const sig =
-await sigRes.json();
+const sig=await sigRes.json();
 
 
 for(const file of fileInput.files){
 
-const form =
-new FormData();
+const form=new FormData();
 
 form.append("file",file);
-
 form.append("api_key",sig.apiKey);
-
 form.append("timestamp",sig.timestamp);
-
 form.append("signature",sig.signature);
-
 form.append("folder",sig.folder);
 
 await fetch(
 `https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`,
-{
-method:"POST",
-body:form
-}
+{method:"POST",body:form}
 );
 
 }
-
-
-setStatus("Upload complete");
 
 openAlbum(currentAlbum);
 
@@ -534,7 +533,6 @@ openAlbum(currentAlbum);
 loadAlbums();
 
 </script>
-
 
 </body>
 </html>
