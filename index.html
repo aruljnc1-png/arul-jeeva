@@ -261,7 +261,7 @@ lightboxContent.addEventListener("click", (e) => e.stopPropagation());
 lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
 
 // --- Exact time elapsed since first meeting (23-Feb-2023) ---
-const firstMeeting = new Date(2023, 1, 23, 0, 0, 0); // local time: Feb is 1
+const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // local time: Feb is 1
 const counterEl = document.getElementById("loveCounter");
 
 function pad2(n){ return String(n).padStart(2, "0"); }
@@ -544,3 +544,4 @@ loadAlbums();
 
 </body>
 </html>
+
