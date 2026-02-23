@@ -1,0 +1,4 @@
+/pages/api/albums.js
+/pages/api/images.js
+/pages/api/upload.js
+/pages/api/albums/create.js   (optional)
