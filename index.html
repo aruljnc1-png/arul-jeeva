@@ -6,7 +6,6 @@
 <title>Arul & Jeeva</title>
 
 <style>
-
 :root{
   --bg:#0b0b12;
   --card:rgba(255,255,255,.08);
@@ -16,52 +15,33 @@
   --border:rgba(255,255,255,.14);
   --shadow:0 10px 30px rgba(0,0,0,.35);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
   background:
-  radial-gradient(900px 500px at 20% 10%, rgba(140,70,255,.25), transparent 60%),
-  radial-gradient(900px 500px at 80% 20%, rgba(0,220,255,.18), transparent 60%),
-  radial-gradient(1000px 600px at 50% 90%, rgba(255,70,180,.14), transparent 60%),
-  var(--bg);
+    radial-gradient(900px 500px at 20% 10%, rgba(140,70,255,.25), transparent 60%),
+    radial-gradient(900px 500px at 80% 20%, rgba(0,220,255,.18), transparent 60%),
+    radial-gradient(1000px 600px at 50% 90%, rgba(255,70,180,.14), transparent 60%),
+    var(--bg);
+  min-height:100vh;
 }
 
-header{
-  text-align:center;
-  padding:18px;
-}
+header{ text-align:center; padding:18px; }
+.brand-title{ font-size:28px; font-weight:900; }
+.brand-sub{ color:var(--muted); margin-top:6px; }
 
-.brand-title{
-  font-size:28px;
-  font-weight:900;
-}
-
-.brand-sub{
-  color:var(--muted);
-}
-
-.hero{
-  max-width:1100px;
-  margin:auto;
-  padding:18px;
-}
-
+.hero{ max-width:1100px; margin:auto; padding:18px; }
 .hero img{
   width:100%;
   border-radius:18px;
   border:1px solid var(--border);
   box-shadow:var(--shadow);
+  display:block;
 }
 
-main{
-  max-width:1100px;
-  margin:auto;
-  padding:18px;
-}
+main{ max-width:1100px; margin:auto; padding:18px; }
 
 .grid{
   display:grid;
@@ -76,11 +56,9 @@ main{
   padding:12px;
   cursor:pointer;
   box-shadow:var(--shadow);
+  transition:.15s;
 }
-
-.cardBtn:hover{
-  background:var(--card2);
-}
+.cardBtn:hover{ background:var(--card2); transform:translateY(-2px); }
 
 .albumThumb{
   width:100%;
@@ -88,14 +66,24 @@ main{
   border-radius:14px;
   overflow:hidden;
   margin-bottom:10px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(255,255,255,.55);
+  font-size:12px;
 }
-
-.albumThumb img,
-.albumThumb video{
+.albumThumb img, .albumThumb video{
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
+  background:#000;
 }
+
+.cardTitle{ font-weight:900; }
+.cardSub{ color:var(--muted); font-size:12px; margin-top:6px; }
 
 .imagesGrid{
   display:grid;
@@ -107,14 +95,16 @@ main{
   border-radius:14px;
   overflow:hidden;
   border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  box-shadow:var(--shadow);
 }
-
-.imgCard img,
-.imgCard video{
+.imgCard img, .imgCard video{
   width:100%;
   height:200px;
   object-fit:cover;
+  display:block;
   cursor:pointer;
+  background:#000;
 }
 
 .actionsBottom{
@@ -125,26 +115,19 @@ main{
   flex-wrap:wrap;
 }
 
-.btn,
-.uploadLabel{
+.btn, .uploadLabel{
   padding:12px 16px;
   border-radius:12px;
   border:1px solid var(--border);
   background:var(--card);
+  color:var(--text);
   cursor:pointer;
 }
+.uploadLabel input{ display:none; }
 
-.uploadLabel input{
-  display:none;
-}
-
-.hidden{
-  display:none;
-}
-
+.hidden{ display:none !important; }
 
 /* LIGHTBOX */
-
 .lightbox{
   position:fixed;
   inset:0;
@@ -154,384 +137,327 @@ main{
   justify-content:center;
   z-index:9999;
 }
-
-.lightbox img,
-.lightbox video{
+.lightboxContent{
+  position:relative;
   max-width:95%;
   max-height:95%;
 }
-
+.lightbox img,
+.lightbox video{
+  max-width:95vw;
+  max-height:90vh;
+  display:block;
+}
 .lightboxClose{
   position:absolute;
-  top:20px;
-  right:30px;
-  font-size:40px;
-  color:white;
+  top:-10px;
+  right:-10px;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-size:26px;
+  line-height:36px;
+  text-align:center;
   cursor:pointer;
+  user-select:none;
 }
-
+.smallNote{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:10px;
+}
 </style>
 </head>
 
-
 <body>
 
-
 <header>
-
-<div class="brand-title">Arul & Jeeva</div>
-
-<div class="brand-sub">
-Every shared moment is a meditation, a bridge connecting our inner worlds.
-</div>
-
+  <div class="brand-title">Arul & Jeeva</div>
+  <div class="brand-sub">Every shared moment is a meditation, a bridge connecting our inner worlds.</div>
 </header>
 
-
 <section class="hero">
-<img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png">
+  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual">
 </section>
-
 
 <main>
 
-<section id="albumsView">
+  <section id="albumsView">
+    <h2>Albums</h2>
+    <div id="albumsGrid" class="grid"></div>
+    <div class="smallNote">Tip: click an album to view photos. Upload adds into the selected album.</div>
+  </section>
 
-<h2>Albums</h2>
+  <section id="imagesView" class="hidden">
+    <button id="backBtn" class="btn">← Back</button>
+    <h2 id="albumTitle"></h2>
+    <div id="imagesGrid" class="imagesGrid"></div>
+  </section>
 
-<div id="albumsGrid" class="grid"></div>
+  <div class="actionsBottom">
+    <button id="newAlbumBtn" class="btn">+ New Album</button>
 
-</section>
+    <label class="uploadLabel">
+      Upload
+      <input id="fileInput" type="file" multiple accept="image/*,video/*">
+    </label>
 
-
-<section id="imagesView" class="hidden">
-
-<button onclick="goBack()" class="btn">← Back</button>
-
-<h2 id="albumTitle"></h2>
-
-<div id="imagesGrid" class="imagesGrid"></div>
-
-</section>
-
-
-<div class="actionsBottom">
-
-<button onclick="createAlbum()" class="btn">
-+ New Album
-</button>
-
-<label class="uploadLabel">
-Upload
-<input id="fileInput" type="file" multiple accept="image/*,video/*">
-</label>
-
-<button onclick="loadAlbums()" class="btn">
-Refresh
-</button>
-
-</div>
+    <button id="refreshBtn" class="btn">Refresh</button>
+  </div>
 
 </main>
 
-
-
 <!-- LIGHTBOX -->
-
-<div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
-
-<span class="lightboxClose">×</span>
-
-<img id="lightboxImg">
-
-<video id="lightboxVideo" controls class="hidden"></video>
-
+<div id="lightbox" class="lightbox hidden">
+  <div class="lightboxContent" id="lightboxContent">
+    <div class="lightboxClose" id="lightboxClose">×</div>
+    <img id="lightboxImg" class="hidden" alt="">
+    <video id="lightboxVideo" class="hidden" controls playsinline></video>
+  </div>
 </div>
 
-
-
 <script>
+const API_BASE = "https://arul-jeeva.vercel.app";
 
-const API_BASE =
-"https://arul-jeeva.vercel.app";
+const albumsGrid = document.getElementById("albumsGrid");
+const imagesGrid = document.getElementById("imagesGrid");
+const albumTitle = document.getElementById("albumTitle");
+const albumsView = document.getElementById("albumsView");
+const imagesView = document.getElementById("imagesView");
+const fileInput = document.getElementById("fileInput");
 
-const albumsGrid =
-document.getElementById("albumsGrid");
+const backBtn = document.getElementById("backBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const newAlbumBtn = document.getElementById("newAlbumBtn");
 
-const imagesGrid =
-document.getElementById("imagesGrid");
+let currentAlbum = null;
 
-const albumTitle =
-document.getElementById("albumTitle");
+// Lightbox refs
+const lightbox = document.getElementById("lightbox");
+const lightboxContent = document.getElementById("lightboxContent");
+const lightboxClose = document.getElementById("lightboxClose");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxVideo = document.getElementById("lightboxVideo");
 
-const albumsView =
-document.getElementById("albumsView");
+// Close when clicking outside content
+lightbox.addEventListener("click", () => closeLightbox());
+// Prevent closing when clicking the content itself
+lightboxContent.addEventListener("click", (e) => e.stopPropagation());
+lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
 
-const imagesView =
-document.getElementById("imagesView");
-
-const fileInput =
-document.getElementById("fileInput");
-
-let currentAlbum=null;
-
-
-
-function goBack(){
-
-imagesView.classList.add("hidden");
-
-albumsView.classList.remove("hidden");
-
-currentAlbum=null;
-
+function showAlbums(){
+  imagesView.classList.add("hidden");
+  albumsView.classList.remove("hidden");
+  currentAlbum = null;
 }
 
-
-
-async function getThumb(path){
-
-const res=
-await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=1`);
-
-const data=
-await res.json();
-
-if(!data.ok||!data.images.length)
-return null;
-
-return data.images[0];
-
+function showImages(albumPath){
+  albumsView.classList.add("hidden");
+  imagesView.classList.remove("hidden");
+  currentAlbum = albumPath;
+  albumTitle.textContent = albumPath;
 }
 
-
+async function getThumbItem(albumPath){
+  const url = `${API_BASE}/api/images?album=${encodeURIComponent(albumPath)}&max=1`;
+  const res = await fetch(url, { cache: "no-store" });
+  const data = await res.json();
+  if(!data.ok) return null;
+  const first = (data.images || [])[0];
+  return first || null;
+}
 
 async function loadAlbums(){
+  showAlbums();
+  albumsGrid.innerHTML = "";
 
-albumsGrid.innerHTML="";
+  const res = await fetch(`${API_BASE}/api/albums`, { cache: "no-store" });
+  const data = await res.json();
 
-imagesView.classList.add("hidden");
+  if(!data.ok){
+    albumsGrid.innerHTML = `<div style="color:rgba(255,255,255,.7)">Failed to load albums: ${data.detail || data.error || "Unknown"}</div>`;
+    return;
+  }
 
-albumsView.classList.remove("hidden");
+  for(const album of (data.albums || [])){
+    const card = document.createElement("div");
+    card.className = "cardBtn";
+    card.addEventListener("click", () => openAlbum(album.path));
 
-const res=
-await fetch(`${API_BASE}/api/albums`);
+    const thumbDiv = document.createElement("div");
+    thumbDiv.className = "albumThumb";
+    thumbDiv.textContent = "Loading cover…";
+    thumbDiv.dataset.album = album.path;
 
-const data=
-await res.json();
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "cardTitle";
+    titleDiv.textContent = album.name;
 
+    const subDiv = document.createElement("div");
+    subDiv.className = "cardSub";
+    subDiv.textContent = album.path;
 
-for(const album of data.albums){
+    card.appendChild(thumbDiv);
+    card.appendChild(titleDiv);
+    card.appendChild(subDiv);
 
-const card=
-document.createElement("div");
+    albumsGrid.appendChild(card);
+  }
 
-card.className="cardBtn";
+  // Load thumbs after rendering (so UI appears immediately)
+  const thumbHolders = Array.from(document.querySelectorAll(".albumThumb[data-album]"));
+  for(const holder of thumbHolders){
+    const albumPath = holder.dataset.album;
+    try{
+      const item = await getThumbItem(albumPath);
+      if(!item){
+        holder.textContent = "No photos yet";
+        continue;
+      }
 
-card.onclick=()=>openAlbum(album.path);
+      const url = item.secure_url;
+      const isVideo = item.resource_type === "video" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
-
-card.innerHTML=
-`
-<div class="albumThumb" id="thumb-${album.path}"></div>
-
-<div>${album.name}</div>
-`;
-
-
-albumsGrid.appendChild(card);
-
-
-const thumb=
-await getThumb(album.path);
-
-if(thumb){
-
-const holder=
-document.getElementById(`thumb-${album.path}`);
-
-if(thumb.resource_type==="video"){
-
-holder.innerHTML=
-`<video src="${thumb.secure_url}"></video>`;
-
-}
-else{
-
-holder.innerHTML=
-`<img src="${thumb.secure_url}">`;
-
-}
-
-}
-
-}
-
+      holder.innerHTML = isVideo
+        ? `<video src="${url}" muted playsinline preload="metadata"></video>`
+        : `<img src="${url}" loading="lazy" alt="">`;
+    }catch(e){
+      holder.textContent = "No cover";
+    }
+  }
 }
 
+async function openAlbum(albumPath){
+  showImages(albumPath);
+  imagesGrid.innerHTML = "";
 
+  const res = await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(albumPath)}&max=100`, { cache:"no-store" });
+  const data = await res.json();
 
-async function openAlbum(path){
+  if(!data.ok){
+    imagesGrid.innerHTML = `<div style="color:rgba(255,255,255,.7)">Failed to load images: ${data.detail || data.error || "Unknown"}</div>`;
+    return;
+  }
 
-currentAlbum=path;
+  for(const item of (data.images || [])){
+    const card = document.createElement("div");
+    card.className = "imgCard";
 
-albumTitle.textContent=path;
+    const url = item.secure_url;
+    const isVideo = item.resource_type === "video" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
-albumsView.classList.add("hidden");
+    if(isVideo){
+      const vid = document.createElement("video");
+      vid.src = url;
+      vid.controls = true;
+      vid.playsInline = true;
+      vid.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLightbox(url, "video"); });
+      card.appendChild(vid);
+    }else{
+      const img = document.createElement("img");
+      img.src = url;
+      img.loading = "lazy";
+      img.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLightbox(url, "image"); });
+      card.appendChild(img);
+    }
 
-imagesView.classList.remove("hidden");
-
-imagesGrid.innerHTML="";
-
-const res=
-await fetch(`${API_BASE}/api/images?album=${encodeURIComponent(path)}&max=100`);
-
-const data=
-await res.json();
-
-
-for(const img of data.images){
-
-const card=
-document.createElement("div");
-
-card.className="imgCard";
-
-
-if(img.resource_type==="video"){
-
-card.innerHTML=
-`<video src="${img.secure_url}" onclick="openLightbox('${img.secure_url}','video')"></video>`;
-
-}
-else{
-
-card.innerHTML=
-`<img src="${img.secure_url}" onclick="openLightbox('${img.secure_url}','image')">`;
-
+    imagesGrid.appendChild(card);
+  }
 }
 
+function openLightbox(url, type){
+  lightbox.classList.remove("hidden");
 
-imagesGrid.appendChild(card);
-
+  if(type === "video"){
+    lightboxImg.classList.add("hidden");
+    lightboxVideo.classList.remove("hidden");
+    lightboxVideo.src = url;
+    lightboxVideo.currentTime = 0;
+    // autoplay is often blocked; user can hit play
+  }else{
+    lightboxVideo.classList.add("hidden");
+    lightboxImg.classList.remove("hidden");
+    lightboxImg.src = url;
+  }
 }
-
-}
-
-
-
-function openLightbox(url,type){
-
-const lb=
-document.getElementById("lightbox");
-
-const img=
-document.getElementById("lightboxImg");
-
-const vid=
-document.getElementById("lightboxVideo");
-
-lb.classList.remove("hidden");
-
-
-if(type==="video"){
-
-img.classList.add("hidden");
-
-vid.classList.remove("hidden");
-
-vid.src=url;
-
-}
-else{
-
-vid.classList.add("hidden");
-
-img.classList.remove("hidden");
-
-img.src=url;
-
-}
-
-}
-
-
 
 function closeLightbox(){
-
-const lb=
-document.getElementById("lightbox");
-
-const vid=
-document.getElementById("lightboxVideo");
-
-lb.classList.add("hidden");
-
-vid.pause();
-
+  lightbox.classList.add("hidden");
+  // stop video + free memory
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute("src");
+  lightboxVideo.load();
+  lightboxImg.removeAttribute("src");
 }
-
-
 
 async function createAlbum(){
-
-const name=prompt("Album name:");
-
-if(!name)return;
-
-currentAlbum=name;
-
-openAlbum(name);
-
+  const name = prompt("Album name:");
+  if(!name) return;
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  // Cloudinary folder is created on first upload, so we just switch to it
+  await openAlbum(trimmed);
 }
 
+fileInput.addEventListener("change", async () => {
+  const files = Array.from(fileInput.files || []);
+  fileInput.value = "";
 
+  if(!currentAlbum){
+    alert("Select an album first.");
+    return;
+  }
+  if(files.length === 0) return;
 
-fileInput.onchange=async function(){
+  // get signature
+  const sigRes = await fetch(`${API_BASE}/api/upload`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ albumName: currentAlbum })
+  });
+  const sig = await sigRes.json();
 
-if(!currentAlbum){
+  if(!sig.ok){
+    alert("Upload signature error: " + (sig.detail || sig.error || "Unknown"));
+    return;
+  }
 
-alert("Select album first");
+  for(const file of files){
+    const form = new FormData();
+    form.append("file", file);
+    form.append("api_key", sig.apiKey);
+    form.append("timestamp", sig.timestamp);
+    form.append("signature", sig.signature);
+    form.append("folder", sig.folder);
 
-return;
+    const up = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`, {
+      method:"POST",
+      body: form
+    });
+    if(!up.ok){
+      const err = await up.json().catch(()=>({}));
+      alert("Upload failed: " + (err?.error?.message || "Unknown"));
+      return;
+    }
+  }
 
-}
-
-const sigRes=
-await fetch(`${API_BASE}/api/upload`,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({albumName:currentAlbum})
+  // refresh album after upload
+  await openAlbum(currentAlbum);
 });
 
-const sig=await sigRes.json();
+backBtn.addEventListener("click", () => showAlbums());
+refreshBtn.addEventListener("click", async () => {
+  if(currentAlbum) await openAlbum(currentAlbum);
+  else await loadAlbums();
+});
+newAlbumBtn.addEventListener("click", () => createAlbum());
 
-
-for(const file of fileInput.files){
-
-const form=new FormData();
-
-form.append("file",file);
-form.append("api_key",sig.apiKey);
-form.append("timestamp",sig.timestamp);
-form.append("signature",sig.signature);
-form.append("folder",sig.folder);
-
-await fetch(
-`https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`,
-{method:"POST",body:form}
-);
-
-}
-
-openAlbum(currentAlbum);
-
-};
-
-
-
+// init
 loadAlbums();
-
 </script>
 
 </body>
