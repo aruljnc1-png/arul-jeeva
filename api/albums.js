@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 
 export default async function handler(req, res) {
-  // Enable CORS (so GitHub Pages frontend can call this)
+  // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Read env vars from Vercel
+    // Read Cloudinary env vars
     const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
     const api_key = process.env.CLOUDINARY_API_KEY;
     const api_secret = process.env.CLOUDINARY_API_SECRET;
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         ok: false,
         error: "Missing Cloudinary environment variables",
         detail:
-          "Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Vercel project settings.",
+          "Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Vercel.",
       });
     }
 
@@ -41,27 +41,25 @@ export default async function handler(req, res) {
       api_secret,
     });
 
-    // Optional root folder
-    const root = (process.env.CLOUDINARY_FOLDER_ROOT || "")
-      .replace(/^\/|\/$/g, "");
+    // Default root folder from env
+    const root = (process.env.CLOUDINARY_FOLDER_ROOT || "").replace(/^\/|\/$/g, "");
 
-    // Allow override via query param
-    const prefix = (req.query?.prefix
-      ? String(req.query.prefix)
-      : root
-    ).replace(/^\/|\/$/g, "");
+    // IMPORTANT: allow prefix override even if empty string
+    const hasPrefixParam = Object.prototype.hasOwnProperty.call(req.query || {}, "prefix");
+    const prefixRaw = hasPrefixParam ? String(req.query.prefix ?? "") : root;
+    const prefix = prefixRaw.replace(/^\/|\/$/g, "");
 
     let result;
 
     if (!prefix) {
-      // List root folders
+      // List ROOT folders
       result = await cloudinary.api.root_folders();
     } else {
-      // List subfolders of specific folder
+      // List subfolders of specified folder
       result = await cloudinary.api.sub_folders(prefix);
     }
 
-    // Format albums list
+    // Format response
     const albums = (result.folders || [])
       .map((folder) => ({
         name: folder.name,
@@ -72,7 +70,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
-      root: prefix || "",
+      root: prefix,
       count: albums.length,
       albums,
     });
@@ -80,7 +78,6 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("GET /api/albums failed:", err);
 
-    // Extract readable error message
     let detail;
 
     if (err?.error?.message) {
