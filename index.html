@@ -98,7 +98,6 @@
     .cardTitle{font-weight:900}
     .cardSub{margin-top:6px; font-size:12px; color:var(--muted)}
 
-    /* images grid */
     .imagesGrid{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
@@ -119,6 +118,19 @@
       background:#000;
     }
     .hidden{display:none !important}
+
+    .hero{
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px;
+    }
+    .hero img{
+      width:100%;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      display:block;
+    }
   </style>
 </head>
 
@@ -126,7 +138,9 @@
 <header>
   <div>
     <div class="brand-title">Arul & Jeeva</div>
-    <div class="brand-sub">Cosmic Love Album ✨</div>
+    <div class="brand-sub">
+      Every shared moment is a meditation, a bridge connecting our inner worlds.
+    </div>
   </div>
 
   <div class="actions">
@@ -140,16 +154,21 @@
   </div>
 </header>
 
+<section class="hero">
+  <img
+    src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png"
+    alt="Spiritual"
+  />
+</section>
+
 <main>
   <div id="status" class="status">Loading…</div>
 
-  <!-- Albums view -->
   <section id="albumsView">
     <h2>Albums</h2>
     <div id="albumsGrid" class="grid"></div>
   </section>
 
-  <!-- Images view -->
   <section id="imagesView" class="hidden">
     <h2 id="albumTitle"></h2>
     <div id="imagesGrid" class="imagesGrid"></div>
@@ -157,7 +176,7 @@
 </main>
 
 <script>
-  // ✅ Production backend
+  // Production backend
   const API_BASE = "https://arul-jeeva.vercel.app";
 
   const statusEl = document.getElementById("status");
@@ -174,9 +193,7 @@
 
   let currentAlbumPath = null;
 
-  function setStatus(msg) {
-    statusEl.textContent = msg;
-  }
+  function setStatus(msg) { statusEl.textContent = msg; }
 
   function showAlbums() {
     currentAlbumPath = null;
@@ -225,7 +242,6 @@
         btn.addEventListener("click", () => openAlbum(a.path, a.name));
         albumsGrid.appendChild(btn);
       }
-
     } catch (e) {
       setStatus(`FETCH FAILED: ${e.message}`);
     }
@@ -245,20 +261,21 @@
       const data = await res.json();
 
       if (!data.ok) {
-        setStatus(`Images error: ${data.detail || data.error || "Unknown"}\n\nIf you don't have /api/images yet, tell me and I’ll add it.`);
+        setStatus(`Images error: ${data.detail || data.error || "Unknown"}`);
         return;
       }
 
-      const imgs = data.images || [];
-      setStatus(`Loaded ${imgs.length} items from: ${albumPath}`);
+      const items = data.images || [];
+      setStatus(`Loaded ${items.length} items from: ${albumPath}`);
 
-      for (const item of imgs) {
+      for (const item of items) {
         const card = document.createElement("div");
         card.className = "imgCard";
 
-        // Basic media type check
         const url = item.secure_url || "";
-        const isVideo = /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url) || item.resource_type === "video";
+        const isVideo =
+          item.resource_type === "video" ||
+          /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
         card.innerHTML = isVideo
           ? `<video src="${url}" controls preload="metadata"></video>`
@@ -266,21 +283,19 @@
 
         imagesGrid.appendChild(card);
       }
-
     } catch (e) {
       setStatus(`FETCH FAILED: ${e.message}`);
     }
   }
 
   async function createAlbumFlow() {
-    const name = prompt("New album name (e.g. Valentines 2027):");
+    const name = prompt("New album name (example: Valentines 2027):");
     if (!name) return;
 
-    // We can create folder explicitly (optional backend). For now we just switch album
-    // and rely on first upload to create it on Cloudinary.
-    setStatus(`New album selected: ${name}\nNow upload photos to create it.`);
-    currentAlbumPath = name; // root folder name (spaces allowed)
-    showImages(name, name);
+    // We rely on first upload to create the folder in Cloudinary
+    setStatus(`New album selected: ${name}\nNow upload files to create it.`);
+    currentAlbumPath = name.trim();
+    showImages(currentAlbumPath, currentAlbumPath);
     imagesGrid.innerHTML = "";
   }
 
@@ -294,7 +309,7 @@
 
     setStatus(`Preparing upload for album: ${currentAlbumPath}`);
 
-    // Ask backend for signature
+    // Get signature from backend
     let sig;
     try {
       const res = await fetch(`${API_BASE}/api/upload`, {
@@ -304,11 +319,11 @@
       });
       sig = await res.json();
       if (!sig.ok) {
-        setStatus(`Upload signature error: ${sig.detail || sig.error || "Unknown"}\n\nIf you don't have /api/upload yet, tell me and I’ll add it.`);
+        setStatus(`Upload signature error: ${sig.detail || sig.error || "Unknown"}`);
         return;
       }
     } catch (e) {
-      setStatus(`Signature fetch failed: ${e.message}\n\nIf you don't have /api/upload yet, tell me and I’ll add it.`);
+      setStatus(`Signature fetch failed: ${e.message}`);
       return;
     }
 
@@ -337,7 +352,6 @@
     }
 
     setStatus(`Upload complete. Refreshing album…`);
-    // reload images
     await openAlbum(currentAlbumPath, currentAlbumPath);
   }
 
@@ -351,12 +365,10 @@
 
   fileInput.addEventListener("change", async (e) => {
     const files = Array.from(e.target.files || []);
-    // reset input so selecting same files again works
     e.target.value = "";
     await uploadFiles(files);
   });
 
-  // start
   loadAlbums();
 </script>
 </body>
