@@ -436,16 +436,18 @@ main{ max-width:1100px; margin:auto; padding:18px; }
         <option value="">All tags</option>
       </select>
       <input id="journalSearch" type="text" class="journalInput" placeholder="Search text…">
-      <button class="btn" id="journalSearchBtn">Search</button>
-      <button class="btn" id="journalClearBtn">Clear</button>
+      <button class="btn" id="journalSearchBtn" type="button">Search</button>
+      <button class="btn" id="journalClearBtn" type="button">Clear</button>
     </div>
 
-    <select id="journalTag" class="journalSelect"></select>
+    <!-- Emotional tag selector -->
+    <select id="journalTag" class="journalSelect" aria-label="Journal tag"></select>
 
     <textarea id="journalText" class="journalText" rows="3"
       placeholder="Write a short note… (latest appears on top)"></textarea>
 
     <div class="journalActions">
+      <!-- IMPORTANT: type=button prevents accidental form-submit navigation -->
       <button type="button" class="btn" id="journalPostBtn">Post</button>
     </div>
 
@@ -466,7 +468,7 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 <script>
 const API_BASE = "https://arul-jeeva.vercel.app";
 
-/* ---- Password ---- */
+/* ---------------- Password ---------------- */
 const SITE_PASSWORD = "1111";
 const lockScreen = document.getElementById("lockScreen");
 const passwordInput = document.getElementById("passwordInput");
@@ -496,7 +498,7 @@ window.addEventListener("load", () => {
   }
 });
 
-/* ---- Counter (exact elapsed) ---- */
+/* ---------------- Counter (exact elapsed) ---------------- */
 const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // 23-Feb-2023 21:00
 const counterEl = document.getElementById("loveCounter");
 
@@ -553,7 +555,7 @@ function updateLoveCounter(){
 updateLoveCounter();
 setInterval(updateLoveCounter, 1000);
 
-/* ---- Gallery ---- */
+/* ---------------- Gallery ---------------- */
 const albumsGrid = document.getElementById("albumsGrid");
 const imagesGrid = document.getElementById("imagesGrid");
 const albumTitle = document.getElementById("albumTitle");
@@ -593,7 +595,7 @@ function showImages(albumPath){
 
 async function fetchJson(url, opts){
   const res = await fetch(url, opts || { cache: "no-store" });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   return { res, data };
 }
 
@@ -716,7 +718,7 @@ function openLightbox(url, type){
 
 function closeLightbox(){
   lightbox.classList.add("hidden");
-  lightboxVideo.pause();
+  try { lightboxVideo.pause(); } catch(_) {}
   lightboxVideo.removeAttribute("src");
   lightboxVideo.load();
   lightboxImg.removeAttribute("src");
@@ -750,7 +752,7 @@ fileInput.addEventListener("change", async () => {
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({ albumName: currentAlbum })
   });
-  const sig = await sigRes.json();
+  const sig = await sigRes.json().catch(()=>({}));
 
   if(!sig.ok){
     alert("Upload signature error: " + (sig.detail || sig.error || "Unknown"));
@@ -780,12 +782,26 @@ fileInput.addEventListener("change", async () => {
   await openAlbum(currentAlbum);
 });
 
-/* ---- Journal ---- */
+/* ---------------- Journal ----------------
+   Fixes included:
+   - Ensures the Post button always triggers (single handler, no duplicates)
+   - Adds Enter/Ctrl+Enter shortcut to post
+   - Robust tag init + filter dropdown
+   - Handles edit/save/cancel without breaking other entries
+   - Uses consistent API calls: POST/PUT/DELETE to /api/journal
+   - Better error handling if API returns non-JSON
+------------------------------------------------ */
 const JOURNAL_TOKEN = "1111"; // must match Vercel env var JOURNAL_TOKEN (recommended)
 
+// Expanded emotional tags (you asked specifically)
 const TAGS = [
   "Love",
+  "Joy",
   "Gratitude",
+  "Peace",
+  "Hope",
+  "Longing",
+  "Missing You",
   "Reflection",
   "Healing",
   "Growth",
@@ -793,7 +809,11 @@ const TAGS = [
   "Dreams",
   "Apology",
   "Prayer",
-  "Celebration"
+  "Celebration",
+  "Stress",
+  "Anxiety",
+  "Sadness",
+  "Anger"
 ];
 
 const journalDate = document.getElementById("journalDate");
@@ -813,30 +833,41 @@ function headersJournal(extra){
   };
 }
 
+async function safeJson(res){
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { return { ok:false, error:"Non-JSON response", detail:text?.slice(0,400) }; }
+}
+
 function fmtLocal(iso){
   const d = new Date(iso);
   return d.toLocaleString();
 }
 
 function initTags(){
+  // tag selector for new posts
   journalTag.innerHTML = "";
-  for(const t of TAGS){
+  TAGS.forEach(t=>{
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     journalTag.appendChild(opt);
-  }
-  // default
+  });
   journalTag.value = "Reflection";
 
   // filter dropdown
-  journalFilterTag.innerHTML = `<option value="">All tags</option>`;
-  for(const t of TAGS){
+  journalFilterTag.innerHTML = "";
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = "All tags";
+  journalFilterTag.appendChild(all);
+
+  TAGS.forEach(t=>{
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     journalFilterTag.appendChild(opt);
-  }
+  });
 }
 
 async function loadJournal(){
@@ -847,8 +878,8 @@ async function loadJournal(){
 
   const url = `${API_BASE}/api/journal${params.toString() ? "?" + params.toString() : ""}`;
 
-  const res = await fetch(url, { headers: headersJournal() });
-  const data = await res.json();
+  const res = await fetch(url, { headers: headersJournal(), cache:"no-store" });
+  const data = await safeJson(res);
 
   journalFeed.innerHTML = "";
 
@@ -889,14 +920,16 @@ async function loadJournal(){
     btnRow.className = "journalRowBtns";
 
     const editBtn = document.createElement("button");
+    editBtn.type = "button";
     editBtn.className = "smallBtn";
     editBtn.textContent = "Edit";
-    editBtn.onclick = () => startEdit(e, item);
+    editBtn.addEventListener("click", () => startEdit(e, item));
 
     const delBtn = document.createElement("button");
+    delBtn.type = "button";
     delBtn.className = "smallBtn danger";
     delBtn.textContent = "Delete";
-    delBtn.onclick = () => deleteEntry(e.id);
+    delBtn.addEventListener("click", () => deleteEntry(e.id));
 
     btnRow.appendChild(editBtn);
     btnRow.appendChild(delBtn);
@@ -910,21 +943,24 @@ async function loadJournal(){
 }
 
 function startEdit(entry, container){
-  // prevent multiple edit boxes
+  // toggle edit box
   const existing = container.querySelector(".editBox");
-  if(existing) { existing.remove(); return; }
+  if(existing){ existing.remove(); return; }
+
+  // close any other open edit boxes (optional but cleaner)
+  document.querySelectorAll(".editBox").forEach(el => el.remove());
 
   const editBox = document.createElement("div");
   editBox.className = "editBox";
 
   const tagSel = document.createElement("select");
   tagSel.className = "journalSelect";
-  for(const t of TAGS){
+  TAGS.forEach(t=>{
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     tagSel.appendChild(opt);
-  }
+  });
   tagSel.value = entry.tag || "Reflection";
 
   const ta = document.createElement("textarea");
@@ -938,17 +974,19 @@ function startEdit(entry, container){
   row.style.flexWrap = "wrap";
   row.style.justifyContent = "flex-end";
 
-  const save = document.createElement("button");
-  save.className = "smallBtn";
-  save.textContent = "Save";
-  save.onclick = async () => {
-    await updateEntry(entry.id, ta.value, tagSel.value);
-  };
-
   const cancel = document.createElement("button");
+  cancel.type = "button";
   cancel.className = "smallBtn";
   cancel.textContent = "Cancel";
-  cancel.onclick = () => editBox.remove();
+  cancel.addEventListener("click", () => editBox.remove());
+
+  const save = document.createElement("button");
+  save.type = "button";
+  save.className = "smallBtn";
+  save.textContent = "Save";
+  save.addEventListener("click", async () => {
+    await updateEntry(entry.id, ta.value, tagSel.value);
+  });
 
   row.appendChild(cancel);
   row.appendChild(save);
@@ -958,29 +996,42 @@ function startEdit(entry, container){
   editBox.appendChild(row);
 
   container.appendChild(editBox);
+
+  setTimeout(() => ta.focus(), 0);
 }
 
 async function postJournal(){
   const text = journalText.value.trim();
-  if(!text) return;
-
-  const tag = journalTag.value || "Reflection";
-
-  const res = await fetch(`${API_BASE}/api/journal`, {
-    method:"POST",
-    headers: headersJournal({ "Content-Type":"application/json" }),
-    body: JSON.stringify({ text, tag })
-  });
-
-  const data = await res.json();
-  if(!data.ok){
-    alert("Failed to post: " + (data.detail || data.error || "Unknown"));
+  if(!text){
+    alert("Write something first 🙂");
     return;
   }
 
-  journalText.value = "";
-  journalTag.value = "Reflection";
-  await loadJournal();
+  const tag = journalTag.value || "Reflection";
+
+  journalPostBtn.disabled = true;
+  journalPostBtn.textContent = "Posting…";
+
+  try{
+    const res = await fetch(`${API_BASE}/api/journal`, {
+      method:"POST",
+      headers: headersJournal({ "Content-Type":"application/json" }),
+      body: JSON.stringify({ text, tag })
+    });
+
+    const data = await safeJson(res);
+    if(!data.ok){
+      alert("Failed to post: " + (data.detail || data.error || "Unknown"));
+      return;
+    }
+
+    journalText.value = "";
+    journalTag.value = "Reflection";
+    await loadJournal();
+  } finally {
+    journalPostBtn.disabled = false;
+    journalPostBtn.textContent = "Post";
+  }
 }
 
 async function updateEntry(id, text, tag){
@@ -996,7 +1047,7 @@ async function updateEntry(id, text, tag){
     body: JSON.stringify({ id, text: cleaned, tag })
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if(!data.ok){
     alert("Failed to update: " + (data.detail || data.error || "Unknown"));
     return;
@@ -1014,7 +1065,7 @@ async function deleteEntry(id){
     headers: headersJournal()
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if(!data.ok){
     alert("Failed to delete: " + (data.detail || data.error || "Unknown"));
     return;
@@ -1023,24 +1074,31 @@ async function deleteEntry(id){
   await loadJournal();
 }
 
-journalSearchBtn.onclick = loadJournal;
-journalClearBtn.onclick = () => {
+journalSearchBtn.addEventListener("click", (e) => { e.preventDefault(); loadJournal(); });
+journalClearBtn.addEventListener("click", (e) => {
+  e.preventDefault();
   journalDate.value = "";
   journalFilterTag.value = "";
   journalSearch.value = "";
   loadJournal();
-};
-journalPostBtn.onclick = postJournal;
+});
 
+// IMPORTANT: attach ONE click handler only (your original code had duplicates)
+journalPostBtn.addEventListener("click", (e) => { e.preventDefault(); postJournal(); });
+
+// Nice UX: Ctrl+Enter (or Cmd+Enter) posts
+journalText.addEventListener("keydown", (e) => {
+  if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+    e.preventDefault();
+    postJournal();
+  }
+});
+
+/* ---------------- Init ---------------- */
 initTags();
-
-/* ---- Init ---- */
 loadAlbums();
 loadJournal();
-document.getElementById("journalPostBtn").addEventListener("click", postJournal);
 </script>
 
 </body>
 </html>
-
-
