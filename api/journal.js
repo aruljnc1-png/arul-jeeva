@@ -4,10 +4,30 @@ import crypto from "crypto";
 const KEY = "aruljeeva:journal:entries";
 const MAX_RETURN = 300;
 
+// CORS
+const ALLOWED_ORIGIN = "https://www.aruljeeva.com";
+
 // Optional token gate (recommended)
 // Set this in Vercel env vars: JOURNAL_TOKEN=1111 (or a longer secret)
 // Frontend will send header x-journal-token
 const TOKEN = process.env.JOURNAL_TOKEN || "";
+
+function setCors(req, res) {
+  const origin = req.headers.origin;
+
+  // You can either hard-lock to your domain (recommended)...
+  if (origin === ALLOWED_ORIGIN) {
+    res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+  }
+
+  // ...or if you also want to allow the apex domain without www, uncomment:
+  // if (origin === "https://aruljeeva.com") res.setHeader("Access-Control-Allow-Origin", "https://aruljeeva.com");
+
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-journal-token");
+  res.setHeader("Access-Control-Max-Age", "86400");
+}
 
 function send(res, status, obj) {
   res.status(status).json(obj);
@@ -29,6 +49,14 @@ function normTag(tag) {
 
 export default async function handler(req, res) {
   try {
+    // Always set CORS headers (including for errors)
+    setCors(req, res);
+
+    // Handle preflight request
+    if (req.method === "OPTIONS") {
+      return res.status(200).end();
+    }
+
     if (!isAuthorized(req)) {
       return send(res, 401, { ok: false, error: "Unauthorized" });
     }
@@ -41,7 +69,7 @@ export default async function handler(req, res) {
       const raw = await kv.lrange(KEY, 0, MAX_RETURN - 1);
       let entries = raw.map(safeParse).filter(Boolean);
 
-      if (date) entries = entries.filter(e => (e.createdAt || "").slice(0,10) === date);
+      if (date) entries = entries.filter(e => (e.createdAt || "").slice(0, 10) === date);
       if (tag)  entries = entries.filter(e => String(e.tag || "") === tag);
       if (q)    entries = entries.filter(e => String(e.text || "").toLowerCase().includes(q));
 
@@ -127,6 +155,8 @@ export default async function handler(req, res) {
     return send(res, 405, { ok: false, error: "Method not allowed" });
 
   } catch (err) {
+    // Ensure CORS headers even on crash
+    try { setCors(req, res); } catch {}
     return send(res, 500, { ok: false, error: "Journal API failed", detail: String(err?.message || err) });
   }
 }
