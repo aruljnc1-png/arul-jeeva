@@ -782,35 +782,21 @@ fileInput.addEventListener("change", async () => {
   await openAlbum(currentAlbum);
 });
 
-/* ---------------- Journal ----------------
-   Fixes included:
-   - Clears filters after posting so the new entry always appears
------------------------------------------------- */
-const JOURNAL_TOKEN = "1111"; // must match Vercel env var JOURNAL_TOKEN (recommended)
+<script>
+/* ---------------- Journal (REPLACE WHOLE BLOCK WITH THIS) ---------------- */
 
-// Expanded emotional tags (you asked specifically)
+// If you have JOURNAL_TOKEN set in Vercel, put the same value here.
+// If you DON'T use token auth, set "" (empty string).
+const JOURNAL_TOKEN = "1111";
+
+// Tags
 const TAGS = [
-  "Love",
-  "Joy",
-  "Gratitude",
-  "Peace",
-  "Hope",
-  "Longing",
-  "Missing You",
-  "Reflection",
-  "Healing",
-  "Growth",
-  "Adventure",
-  "Dreams",
-  "Apology",
-  "Prayer",
-  "Celebration",
-  "Stress",
-  "Anxiety",
-  "Sadness",
-  "Anger"
+  "Love","Joy","Gratitude","Peace","Hope","Longing","Missing You",
+  "Reflection","Healing","Growth","Adventure","Dreams","Apology",
+  "Prayer","Celebration","Stress","Anxiety","Sadness","Anger"
 ];
 
+// DOM
 const journalDate = document.getElementById("journalDate");
 const journalFilterTag = document.getElementById("journalFilterTag");
 const journalSearch = document.getElementById("journalSearch");
@@ -834,57 +820,49 @@ async function safeJson(res){
   catch { return { ok:false, error:"Non-JSON response", detail:text?.slice(0,400) }; }
 }
 
-function fmtLocal(iso){
+function toLocalYMD(iso){
   const d = new Date(iso);
-  return d.toLocaleString();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
+function fmtLocal(iso){
+  try { return new Date(iso).toLocaleString(); }
+  catch { return String(iso || ""); }
 }
 
 function initTags(){
-  // tag selector for new posts
+  // New post tag selector
   journalTag.innerHTML = "";
-  TAGS.forEach(t=>{
+  for(const t of TAGS){
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     journalTag.appendChild(opt);
-  });
+  }
   journalTag.value = "Reflection";
 
-  // filter dropdown
+  // Filter dropdown
   journalFilterTag.innerHTML = "";
   const all = document.createElement("option");
   all.value = "";
   all.textContent = "All tags";
   journalFilterTag.appendChild(all);
 
-  TAGS.forEach(t=>{
+  for(const t of TAGS){
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     journalFilterTag.appendChild(opt);
-  });
+  }
 }
 
-async function loadJournal(){
-  const params = new URLSearchParams();
-  if(journalDate.value) params.set("date", journalDate.value);
-  if(journalFilterTag.value) params.set("tag", journalFilterTag.value);
-  if(journalSearch.value.trim()) params.set("q", journalSearch.value.trim());
-
-  const url = `${API_BASE}/api/journal${params.toString() ? "?" + params.toString() : ""}`;
-
-  const res = await fetch(url, { headers: headersJournal(), cache:"no-store" });
-  const data = await safeJson(res);
-
+function renderJournal(entries){
   journalFeed.innerHTML = "";
 
-  if(!data.ok){
-    journalFeed.innerHTML = `<div style="color:rgba(255,255,255,.7)">Failed to load journal: ${data.detail || data.error || "Unknown"}</div>`;
-    return;
-  }
-
-  const entries = data.entries || [];
-  if(entries.length === 0){
+  if(!entries || entries.length === 0){
     journalFeed.innerHTML = `<div style="color:rgba(255,255,255,.6)">No journal entries yet.</div>`;
     return;
   }
@@ -909,7 +887,7 @@ async function loadJournal(){
 
     const body = document.createElement("div");
     body.className = "journalBody";
-    body.textContent = e.text;
+    body.textContent = e.text || "";
 
     const btnRow = document.createElement("div");
     btnRow.className = "journalRowBtns";
@@ -937,12 +915,40 @@ async function loadJournal(){
   }
 }
 
+async function loadJournal(){
+  // ALWAYS fetch unfiltered (prevents UTC date mismatch + query bugs)
+  const res = await fetch(`/api/journal`, { headers: headersJournal(), cache:"no-store" });
+  const data = await safeJson(res);
+
+  if(!data.ok){
+    journalFeed.innerHTML = `<div style="color:rgba(255,255,255,.7)">Failed to load journal: ${data.detail || data.error || "Unknown"}</div>`;
+    return;
+  }
+
+  let entries = data.entries || [];
+
+  // Local filtering
+  const wantDate = journalDate.value;           // YYYY-MM-DD
+  const wantTag  = journalFilterTag.value;      // exact
+  const q = journalSearch.value.trim().toLowerCase();
+
+  if(wantDate){
+    entries = entries.filter(e => toLocalYMD(e.createdAt) === wantDate);
+  }
+  if(wantTag){
+    entries = entries.filter(e => String(e.tag || "") === wantTag);
+  }
+  if(q){
+    entries = entries.filter(e => String(e.text || "").toLowerCase().includes(q));
+  }
+
+  renderJournal(entries);
+}
+
 function startEdit(entry, container){
-  // toggle edit box
   const existing = container.querySelector(".editBox");
   if(existing){ existing.remove(); return; }
 
-  // close any other open edit boxes (optional but cleaner)
   document.querySelectorAll(".editBox").forEach(el => el.remove());
 
   const editBox = document.createElement("div");
@@ -950,18 +956,18 @@ function startEdit(entry, container){
 
   const tagSel = document.createElement("select");
   tagSel.className = "journalSelect";
-  TAGS.forEach(t=>{
+  for(const t of TAGS){
     const opt = document.createElement("option");
     opt.value = t;
     opt.textContent = t;
     tagSel.appendChild(opt);
-  });
+  }
   tagSel.value = entry.tag || "Reflection";
 
   const ta = document.createElement("textarea");
   ta.className = "journalText";
   ta.rows = 3;
-  ta.value = entry.text;
+  ta.value = entry.text || "";
 
   const row = document.createElement("div");
   row.style.display = "flex";
@@ -991,7 +997,6 @@ function startEdit(entry, container){
   editBox.appendChild(row);
 
   container.appendChild(editBox);
-
   setTimeout(() => ta.focus(), 0);
 }
 
@@ -1003,12 +1008,11 @@ async function postJournal(){
   }
 
   const tag = journalTag.value || "Reflection";
-
   journalPostBtn.disabled = true;
   journalPostBtn.textContent = "Posting…";
 
   try{
-    const res = await fetch(`${API_BASE}/api/journal`, {
+    const res = await fetch(`/api/journal`, {
       method:"POST",
       headers: headersJournal({ "Content-Type":"application/json" }),
       body: JSON.stringify({ text, tag })
@@ -1020,18 +1024,17 @@ async function postJournal(){
       return;
     }
 
+    // Clear input
     journalText.value = "";
     journalTag.value = "Reflection";
 
-    // ✅ FIX: clear filters so the new entry always shows
+    // Clear filters so you SEE the new post
     journalDate.value = "";
     journalFilterTag.value = "";
     journalSearch.value = "";
 
     await loadJournal();
-
-    // Optional: jump you to the journal feed so you SEE it
-    journalFeed.scrollIntoView({ behavior: "smooth", block: "start" });
+    journalFeed.scrollIntoView({ behavior:"smooth", block:"start" });
 
   } finally {
     journalPostBtn.disabled = false;
@@ -1046,7 +1049,7 @@ async function updateEntry(id, text, tag){
     return;
   }
 
-  const res = await fetch(`${API_BASE}/api/journal`,{
+  const res = await fetch(`/api/journal`,{
     method:"PUT",
     headers: headersJournal({ "Content-Type":"application/json" }),
     body: JSON.stringify({ id, text: cleaned, tag })
@@ -1065,7 +1068,7 @@ async function deleteEntry(id){
   const ok = confirm("Delete this journal entry?");
   if(!ok) return;
 
-  const res = await fetch(`${API_BASE}/api/journal?id=${encodeURIComponent(id)}`,{
+  const res = await fetch(`/api/journal?id=${encodeURIComponent(id)}`,{
     method:"DELETE",
     headers: headersJournal()
   });
@@ -1079,7 +1082,9 @@ async function deleteEntry(id){
   await loadJournal();
 }
 
+// Controls
 journalSearchBtn.addEventListener("click", (e) => { e.preventDefault(); loadJournal(); });
+
 journalClearBtn.addEventListener("click", (e) => {
   e.preventDefault();
   journalDate.value = "";
@@ -1088,10 +1093,8 @@ journalClearBtn.addEventListener("click", (e) => {
   loadJournal();
 });
 
-// IMPORTANT: attach ONE click handler only (your original code had duplicates)
 journalPostBtn.addEventListener("click", (e) => { e.preventDefault(); postJournal(); });
 
-// Nice UX: Ctrl+Enter (or Cmd+Enter) posts
 journalText.addEventListener("keydown", (e) => {
   if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
     e.preventDefault();
@@ -1099,11 +1102,11 @@ journalText.addEventListener("keydown", (e) => {
   }
 });
 
-/* ---------------- Init ---------------- */
+// Init
 initTags();
-loadAlbums();
 loadJournal();
 </script>
 
 </body>
 </html>
+
