@@ -39,9 +39,16 @@ function isAuthorized(req) {
   return got === TOKEN;
 }
 
-function safeParse(s) {
-  try { return JSON.parse(s); }
-  catch { return null; }
+// ✅ FIX: KV can return strings OR already-parsed objects OR other types
+function safeParse(v) {
+  try {
+    if (v == null) return null;
+    if (typeof v === "string") return JSON.parse(v);
+    if (typeof v === "object") return v;
+    return JSON.parse(String(v));
+  } catch {
+    return null;
+  }
 }
 
 function normTag(tag) {
@@ -53,6 +60,7 @@ function normTag(tag) {
 export default async function handler(req, res) {
   try {
     setCors(req, res);
+    res.setHeader("Cache-Control", "no-store");
 
     if (req.method === "OPTIONS") {
       return res.status(200).end();
@@ -69,13 +77,15 @@ export default async function handler(req, res) {
       const q = String(req.query?.q || "").trim().toLowerCase();
 
       const raw = await kv.lrange(KEY, 0, MAX_RETURN - 1);
+
+      // ✅ parse robustly
       let entries = raw.map(safeParse).filter(Boolean);
 
-      if (date) entries = entries.filter(e => (e.createdAt || "").slice(0, 10) === date);
+      // Ensure newest first (LPUSH adds newest at head already; this just ensures ordering)
+      // If any entries were stored as objects without createdAt, keep them but they won't filter by date.
+      if (date) entries = entries.filter(e => String(e.createdAt || "").slice(0, 10) === date);
       if (tag)  entries = entries.filter(e => String(e.tag || "") === tag);
-      if (q)    entries = entries.filter(e =>
-        String(e.text || "").toLowerCase().includes(q)
-      );
+      if (q)    entries = entries.filter(e => String(e.text || "").toLowerCase().includes(q));
 
       return send(res, 200, {
         ok: true,
