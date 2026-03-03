@@ -784,12 +784,7 @@ fileInput.addEventListener("change", async () => {
 
 /* ---------------- Journal ----------------
    Fixes included:
-   - Ensures the Post button always triggers (single handler, no duplicates)
-   - Adds Enter/Ctrl+Enter shortcut to post
-   - Robust tag init + filter dropdown
-   - Handles edit/save/cancel without breaking other entries
-   - Uses consistent API calls: POST/PUT/DELETE to /api/journal
-   - Better error handling if API returns non-JSON
+   - Clears filters after posting so the new entry always appears
 ------------------------------------------------ */
 const JOURNAL_TOKEN = "1111"; // must match Vercel env var JOURNAL_TOKEN (recommended)
 
@@ -1027,7 +1022,17 @@ async function postJournal(){
 
     journalText.value = "";
     journalTag.value = "Reflection";
+
+    // ✅ FIX: clear filters so the new entry always shows
+    journalDate.value = "";
+    journalFilterTag.value = "";
+    journalSearch.value = "";
+
     await loadJournal();
+
+    // Optional: jump you to the journal feed so you SEE it
+    journalFeed.scrollIntoView({ behavior: "smooth", block: "start" });
+
   } finally {
     journalPostBtn.disabled = false;
     journalPostBtn.textContent = "Post";
@@ -1102,4 +1107,3 @@ loadJournal();
 
 </body>
 </html>
-
