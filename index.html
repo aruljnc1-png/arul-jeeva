@@ -4,1109 +4,199 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arul & Jeeva</title>
-
 <style>
-:root{
-  --bg:#050714;
-  --card:rgba(255,255,255,.08);
-  --card2:rgba(255,255,255,.12);
-  --text:rgba(255,255,255,.92);
-  --muted:rgba(255,255,255,.65);
-  --border:rgba(255,255,255,.14);
-  --shadow:0 10px 30px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(900px 500px at 22% 12%, rgba(80, 120, 255, .35), transparent 60%),
-    radial-gradient(900px 500px at 80% 18%, rgba(0, 210, 255, .22), transparent 60%),
-    radial-gradient(1000px 600px at 55% 92%, rgba(120, 90, 255, .18), transparent 60%),
-    radial-gradient(1200px 700px at 50% 40%, rgba(10, 120, 255, .14), transparent 65%),
-    var(--bg);
-  min-height:100vh;
-}
-
-/* LOCK SCREEN */
-#lockScreen{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:10000;
-  padding:22px;
-  background:
-    radial-gradient(900px 520px at 18% 12%, rgba(80, 150, 255, .40), transparent 62%),
-    radial-gradient(900px 520px at 82% 20%, rgba(0, 220, 255, .25), transparent 62%),
-    radial-gradient(1000px 620px at 50% 92%, rgba(110, 90, 255, .22), transparent 62%),
-    linear-gradient(180deg, rgba(5,7,20,.96), rgba(5,7,20,.92));
-  backdrop-filter: blur(10px);
-}
-.lockStars::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 1px, transparent 1.2px),
-    radial-gradient(circle at 60% 40%, rgba(255,255,255,.18) 1px, transparent 1.2px),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,.20) 1px, transparent 1.2px),
-    radial-gradient(circle at 30% 70%, rgba(255,255,255,.14) 1px, transparent 1.2px),
-    radial-gradient(circle at 70% 75%, rgba(255,255,255,.16) 1px, transparent 1.2px);
-  background-size: 260px 260px, 320px 320px, 280px 280px, 360px 360px, 300px 300px;
-  opacity:.55;
-  pointer-events:none;
-}
-.lockWrap{
-  position:relative;
-  width:min(360px, 92vw);
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(255,255,255,.08);
-  box-shadow:0 20px 60px rgba(0,0,0,.55);
-  overflow:hidden;
-}
-.lockGlow{
-  position:absolute;
-  inset:-80px -80px auto -80px;
-  height:200px;
-  background: radial-gradient(closest-side, rgba(80,160,255,.45), transparent 70%);
-  filter: blur(10px);
-  opacity:.9;
-}
-.lockBox{
-  position:relative;
-  padding:26px 22px 22px;
-  text-align:center;
-}
-.lockTitle{ font-size:18px; font-weight:800; }
-.lockSubtitle{ margin-top:8px; font-size:13px; color:rgba(255,255,255,.68); line-height:1.45; }
-.lockInput{
-  width:100%;
-  margin-top:16px;
-  padding:12px 12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.16);
-  outline:none;
-  background:rgba(0,0,0,.25);
-  color:rgba(255,255,255,.92);
-  text-align:center;
-  font-size:16px;
-}
-.lockBtn{
-  width:100%;
-  margin-top:12px;
-  padding:12px 12px;
-  border-radius:10px;
-  border:none;
-  background:rgba(80,150,255,.95);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
-.lockBtn:hover{ filter:brightness(1.05); }
-.lockHint{ margin-top:12px; font-size:12px; color:rgba(255,255,255,.55); }
-.lockError{ margin-top:10px; font-size:13px; color:#ff6b6b; display:none; }
-
-.fadeIn{ animation: fadeIn .55s ease both; }
-.fadeOut{ animation: fadeOut .45s ease both; }
-@keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
-@keyframes fadeOut{ from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(8px);} }
-
-header{ text-align:center; padding:18px; }
-.brand-title{ font-size:28px; font-weight:900; }
-.brand-sub{ color:var(--muted); margin-top:6px; }
-
-.hero{ max-width:1100px; margin:auto; padding:18px; }
-.hero img{
-  width:100%;
-  border-radius:18px;
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  display:block;
-}
-
-.cosmicMessage{
-  text-align:center;
-  margin-top:18px;
-  font-size:18px;
-  font-weight:650;
-  color:rgba(255,255,255,.92);
-}
-.loveCounter{
-  text-align:center;
-  margin-top:10px;
-  font-size:14px;
-  color:rgba(255,255,255,.65);
-  line-height:1.5;
-}
-
-main{ max-width:1100px; margin:auto; padding:18px; }
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:14px;
-}
-
-.cardBtn{
-  border:1px solid var(--border);
-  border-radius:16px;
-  background:var(--card);
-  padding:10px;
-  cursor:pointer;
-  box-shadow:var(--shadow);
-  transition:.15s;
-}
-.cardBtn:hover{ background:var(--card2); transform:translateY(-2px); }
-
-.albumThumb{
-  width:100%;
-  height:120px;
-  border-radius:12px;
-  overflow:hidden;
-  margin-bottom:8px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:rgba(255,255,255,.55);
-  font-size:12px;
-}
-.albumThumb img, .albumThumb video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  background:#000;
-}
-.cardTitle{ font-weight:900; font-size:14px; }
-
-.imagesGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:12px;
-}
-.imgCard{
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
-  box-shadow:var(--shadow);
-}
-.imgCard img, .imgCard video{
-  width:100%;
-  height:200px;
-  object-fit:cover;
-  display:block;
-  cursor:pointer;
-  background:#000;
-}
-
-.actionsBottom{
-  margin-top:20px;
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.btn, .uploadLabel{
-  padding:12px 16px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--card);
-  color:var(--text);
-  cursor:pointer;
-}
-.uploadLabel input{ display:none; }
-
-.hidden{ display:none !important; }
-
-/* LIGHTBOX */
-.lightbox{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.lightboxContent{ position:relative; max-width:95vw; max-height:90vh; }
-.lightbox img, .lightbox video{
-  max-width:95vw;
-  max-height:90vh;
-  display:block;
-}
-.lightboxClose{
-  position:absolute;
-  top:-10px;
-  right:-10px;
-  width:40px;
-  height:40px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.10);
-  color:#fff;
-  font-size:26px;
-  line-height:36px;
-  text-align:center;
-  cursor:pointer;
-  user-select:none;
-}
-
-/* JOURNAL */
-.journal{
-  margin-top:24px;
-  padding:16px;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-  background:rgba(255,255,255,.06);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-}
-
-.journalControls{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-  margin-bottom:10px;
-}
-
-.journalInput, .journalSelect{
-  padding:12px 12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.20);
-  color:rgba(255,255,255,.85);
-}
-
-.journalText{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.20);
-  color:rgba(255,255,255,.92);
-  resize:vertical;
-}
-
-.journalActions{
-  margin-top:10px;
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.journalFeed{
-  margin-top:14px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.journalItem{
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-  padding:12px;
-}
-
-.journalMeta{
-  font-size:12px;
-  color:rgba(255,255,255,.60);
-  margin-bottom:8px;
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.tagPill{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.20);
-  color:rgba(255,255,255,.82);
-  font-size:12px;
-}
-
-.journalBody{ white-space:pre-wrap; line-height:1.5; }
-
-.journalRowBtns{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.smallBtn{
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.06);
-  color:rgba(255,255,255,.88);
-  cursor:pointer;
-}
-
-.smallBtn.danger{
-  border-color: rgba(255,100,100,.35);
-  background: rgba(255,80,80,.10);
-}
-
-.editBox{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+body{margin:0;font-family:system-ui;background:#050714;color:#fff}
+.hidden{display:none}
+.lock{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#050714;z-index:9999}
+.lockBox{background:#111;border:1px solid #333;padding:24px;border-radius:12px;text-align:center}
+input,textarea,select,button{padding:10px;border-radius:8px;border:1px solid #333;background:#111;color:#fff}
+button{cursor:pointer}
+.journal{max-width:700px;margin:120px auto 40px;padding:20px;border:1px solid #333;border-radius:12px}
+.journalItem{border:1px solid #333;padding:12px;border-radius:10px;margin-bottom:10px}
+.tag{font-size:12px;opacity:.7}
 </style>
 </head>
-
 <body>
 
-<!-- LOCK SCREEN -->
-<div id="lockScreen" class="fadeIn lockStars">
-  <div class="lockWrap">
-    <div class="lockGlow"></div>
-    <div class="lockBox">
-      <div class="lockTitle">Private Space</div>
-      <div class="lockSubtitle">A quiet corner of the universe — just for us.</div>
-
-      <input id="passwordInput" type="password" class="lockInput" placeholder="Enter password" inputmode="numeric" />
-      <button id="enterBtn" class="lockBtn">Enter</button>
-
-      <div class="lockHint">Tip: press <b>Enter</b> on your keyboard</div>
-      <div id="lockError" class="lockError">Incorrect password</div>
-    </div>
+<div id="lockScreen" class="lock">
+  <div class="lockBox">
+    <h3>Private Space</h3>
+    <input id="passwordInput" type="password" placeholder="Enter password">
+    <br><br>
+    <button id="enterBtn">Enter</button>
+    <div id="lockError" style="color:#ff6b6b;display:none;margin-top:10px">Wrong password</div>
   </div>
 </div>
 
-<header>
-  <div class="brand-title">Arul & Jeeva</div>
-  <div class="brand-sub">Every shared moment is a meditation, a bridge connecting our inner worlds.</div>
-</header>
+<div class="journal">
+  <h2>Our Journal</h2>
 
-<section class="hero">
-  <img src="https://res.cloudinary.com/dtamlqfx3/image/upload/v1771768963/spiritual-section_cmf3ue.png" alt="Spiritual">
-
-  <div class="cosmicMessage">
-    From the moment our paths crossed, time began to remember itself.
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+    <input type="date" id="journalDate">
+    <select id="journalFilterTag"><option value="">All tags</option></select>
+    <input type="text" id="journalSearch" placeholder="Search...">
+    <button id="journalSearchBtn">Search</button>
+    <button id="journalClearBtn">Clear</button>
   </div>
 
-  <div id="loveCounter" class="loveCounter"></div>
-</section>
+  <select id="journalTag"></select>
+  <br><br>
+  <textarea id="journalText" rows="3" style="width:100%" placeholder="Write something..."></textarea>
+  <br><br>
+  <button id="journalPostBtn">Post</button>
 
-<main>
-
-  <section id="albumsView">
-    <h2>Albums</h2>
-    <div id="albumsGrid" class="grid"></div>
-  </section>
-
-  <section id="imagesView" class="hidden">
-    <button id="backBtn" class="btn">← Back</button>
-    <h2 id="albumTitle"></h2>
-    <div id="imagesGrid" class="imagesGrid"></div>
-  </section>
-
-  <div class="actionsBottom">
-    <button id="newAlbumBtn" class="btn">+ New Album</button>
-
-    <label class="uploadLabel">
-      Upload
-      <input id="fileInput" type="file" multiple accept="image/*,video/*">
-    </label>
-
-    <button id="refreshBtn" class="btn">Refresh</button>
-  </div>
-
-  <!-- JOURNAL -->
-  <section class="journal">
-    <h2>Our Journal</h2>
-
-    <div class="journalControls">
-      <input id="journalDate" type="date" class="journalInput">
-      <select id="journalFilterTag" class="journalSelect">
-        <option value="">All tags</option>
-      </select>
-      <input id="journalSearch" type="text" class="journalInput" placeholder="Search text…">
-      <button class="btn" id="journalSearchBtn" type="button">Search</button>
-      <button class="btn" id="journalClearBtn" type="button">Clear</button>
-    </div>
-
-    <!-- Emotional tag selector -->
-    <select id="journalTag" class="journalSelect" aria-label="Journal tag"></select>
-
-    <textarea id="journalText" class="journalText" rows="3"
-      placeholder="Write a short note… (latest appears on top)"></textarea>
-
-    <div class="journalActions">
-      <!-- IMPORTANT: type=button prevents accidental form-submit navigation -->
-      <button type="button" class="btn" id="journalPostBtn">Post</button>
-    </div>
-
-    <div id="journalFeed" class="journalFeed"></div>
-  </section>
-
-</main>
-
-<!-- LIGHTBOX -->
-<div id="lightbox" class="lightbox hidden">
-  <div class="lightboxContent" id="lightboxContent">
-    <div class="lightboxClose" id="lightboxClose">×</div>
-    <img id="lightboxImg" class="hidden" alt="">
-    <video id="lightboxVideo" class="hidden" controls playsinline></video>
-  </div>
+  <div id="journalFeed" style="margin-top:20px"></div>
 </div>
 
+<!-- LOCK (isolated so lock still works even if other JS breaks) -->
 <script>
-const API_BASE = "";
+(function(){
+  const PASS="1111";
+  const lock=document.getElementById("lockScreen");
+  const input=document.getElementById("passwordInput");
+  const btn=document.getElementById("enterBtn");
+  const err=document.getElementById("lockError");
 
-/* ---------------- Password ---------------- */
-const SITE_PASSWORD = "1111";
-const lockScreen = document.getElementById("lockScreen");
-const passwordInput = document.getElementById("passwordInput");
-const lockError = document.getElementById("lockError");
-const enterBtn = document.getElementById("enterBtn");
-
-function unlockSite(){
-  const input = String(passwordInput.value || "").trim();
-  if(input === SITE_PASSWORD){
-    lockError.style.display = "none";
-    localStorage.setItem("siteUnlocked", "true");
-    lockScreen.classList.remove("fadeIn");
-    lockScreen.classList.add("fadeOut");
-    setTimeout(() => { lockScreen.style.display = "none"; }, 450);
-  } else {
-    lockError.style.display = "block";
-  }
-}
-passwordInput.addEventListener("keydown", (e) => { if(e.key === "Enter") unlockSite(); });
-enterBtn.addEventListener("click", unlockSite);
-
-window.addEventListener("load", () => {
-  if(localStorage.getItem("siteUnlocked") === "true"){
-    lockScreen.style.display = "none";
-  } else {
-    setTimeout(() => passwordInput.focus(), 150);
-  }
-});
-
-/* ---------------- Counter (exact elapsed) ---------------- */
-const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // 23-Feb-2023 21:00
-const counterEl = document.getElementById("loveCounter");
-
-function pad2(n){ return String(n).padStart(2, "0"); }
-
-function addMonths(date, months){
-  const d = new Date(date.getTime());
-  const origDay = d.getDate();
-  d.setMonth(d.getMonth() + months);
-  if (d.getDate() !== origDay) d.setDate(0);
-  return d;
-}
-
-function computeYMDHMS(from, to){
-  if(to < from) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
-
-  let years = to.getFullYear() - from.getFullYear();
-  let anchor = new Date(from.getTime());
-  anchor.setFullYear(from.getFullYear() + years);
-  if(anchor > to){
-    years--;
-    anchor = new Date(from.getTime());
-    anchor.setFullYear(from.getFullYear() + years);
-  }
-
-  let months = (to.getMonth() - anchor.getMonth()) + 12 * (to.getFullYear() - anchor.getFullYear());
-  let anchor2 = addMonths(anchor, months);
-  if(anchor2 > to){
-    months--;
-    anchor2 = addMonths(anchor, months);
-  }
-
-  let ms = to - anchor2;
-  const dayMs = 24*60*60*1000;
-  const hourMs = 60*60*1000;
-  const minMs = 60*1000;
-
-  const days = Math.floor(ms / dayMs); ms -= days * dayMs;
-  const hours = Math.floor(ms / hourMs); ms -= hours * hourMs;
-  const minutes = Math.floor(ms / minMs); ms -= minutes * minMs;
-  const seconds = Math.floor(ms / 1000);
-
-  return { years, months, days, hours, minutes, seconds };
-}
-
-function updateLoveCounter(){
-  const now = new Date();
-  const t = computeYMDHMS(firstMeeting, now);
-
-  counterEl.innerHTML =
-    `<div><b>${t.years}</b> years, <b>${t.months}</b> months, <b>${t.days}</b> days</div>` +
-    `<div><b>${pad2(t.hours)}</b> hours, <b>${pad2(t.minutes)}</b> minutes, <b>${pad2(t.seconds)}</b> seconds since our first meeting</div>`;
-}
-updateLoveCounter();
-setInterval(updateLoveCounter, 1000);
-
-/* ---------------- Gallery ---------------- */
-const albumsGrid = document.getElementById("albumsGrid");
-const imagesGrid = document.getElementById("imagesGrid");
-const albumTitle = document.getElementById("albumTitle");
-const albumsView = document.getElementById("albumsView");
-const imagesView = document.getElementById("imagesView");
-const fileInput = document.getElementById("fileInput");
-
-const backBtn = document.getElementById("backBtn");
-const refreshBtn = document.getElementById("refreshBtn");
-const newAlbumBtn = document.getElementById("newAlbumBtn");
-
-// Lightbox
-const lightbox = document.getElementById("lightbox");
-const lightboxContent = document.getElementById("lightboxContent");
-const lightboxClose = document.getElementById("lightboxClose");
-const lightboxImg = document.getElementById("lightboxImg");
-const lightboxVideo = document.getElementById("lightboxVideo");
-
-let currentAlbum = null;
-
-lightbox.addEventListener("click", () => closeLightbox());
-lightboxContent.addEventListener("click", (e) => e.stopPropagation());
-lightboxClose.addEventListener("click", (e) => { e.stopPropagation(); closeLightbox(); });
-
-function showAlbums(){
-  imagesView.classList.add("hidden");
-  albumsView.classList.remove("hidden");
-  currentAlbum = null;
-}
-
-function showImages(albumPath){
-  albumsView.classList.add("hidden");
-  imagesView.classList.remove("hidden");
-  currentAlbum = albumPath;
-  albumTitle.textContent = albumPath;
-}
-
-async function fetchJson(url, opts){
-  const res = await fetch(url, opts || { cache: "no-store" });
-  const data = await res.json().catch(() => ({}));
-  return { res, data };
-}
-
-async function getThumbItem(albumPath){
-  const url = `${API_BASE}/api/images?album=${encodeURIComponent(albumPath)}&max=1`;
-  const { data } = await fetchJson(url, { cache:"no-store" });
-  if(!data.ok) return null;
-  return (data.images && data.images[0]) ? data.images[0] : null;
-}
-
-async function loadAlbums(){
-  showAlbums();
-  albumsGrid.innerHTML = "";
-
-  const { data } = await fetchJson(`${API_BASE}/api/albums`, { cache:"no-store" });
-  if(!data.ok){
-    albumsGrid.textContent = "Failed to load albums.";
-    return;
-  }
-
-  const albums = data.albums || [];
-  for(const album of albums){
-    const card = document.createElement("div");
-    card.className = "cardBtn";
-    card.addEventListener("click", () => openAlbum(album.path));
-
-    const thumb = document.createElement("div");
-    thumb.className = "albumThumb";
-    thumb.textContent = "Loading…";
-
-    const title = document.createElement("div");
-    title.className = "cardTitle";
-    title.textContent = album.name;
-
-    card.appendChild(thumb);
-    card.appendChild(title);
-    albumsGrid.appendChild(card);
-
-    try{
-      const item = await getThumbItem(album.path);
-      if(!item){
-        thumb.textContent = "No photos yet";
-        continue;
-      }
-
-      const url = item.secure_url || "";
-      const isVideo = item.resource_type === "video" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
-
-      thumb.innerHTML = "";
-      if(isVideo){
-        const v = document.createElement("video");
-        v.src = url;
-        v.muted = true;
-        v.playsInline = true;
-        v.preload = "metadata";
-        thumb.appendChild(v);
-      } else {
-        const img = document.createElement("img");
-        img.src = url;
-        img.loading = "lazy";
-        thumb.appendChild(img);
-      }
-    } catch(e){
-      thumb.textContent = "No cover";
-    }
-  }
-}
-
-async function openAlbum(albumPath){
-  showImages(albumPath);
-  imagesGrid.innerHTML = "";
-
-  const url = `${API_BASE}/api/images?album=${encodeURIComponent(albumPath)}&max=100`;
-  const { data } = await fetchJson(url, { cache:"no-store" });
-
-  if(!data.ok){
-    imagesGrid.textContent = "Failed to load images.";
-    return;
-  }
-
-  const items = data.images || [];
-  for(const item of items){
-    const card = document.createElement("div");
-    card.className = "imgCard";
-
-    const url = item.secure_url || "";
-    const isVideo = item.resource_type === "video" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
-
-    if(isVideo){
-      const v = document.createElement("video");
-      v.src = url;
-      v.controls = true;
-      v.playsInline = true;
-      v.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLightbox(url, "video"); });
-      card.appendChild(v);
-    } else {
-      const img = document.createElement("img");
-      img.src = url;
-      img.loading = "lazy";
-      img.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLightbox(url, "image"); });
-      card.appendChild(img);
-    }
-    imagesGrid.appendChild(card);
-  }
-}
-
-function openLightbox(url, type){
-  lightbox.classList.remove("hidden");
-  if(type === "video"){
-    lightboxImg.classList.add("hidden");
-    lightboxVideo.classList.remove("hidden");
-    lightboxVideo.src = url;
-    lightboxVideo.currentTime = 0;
-  } else {
-    lightboxVideo.classList.add("hidden");
-    lightboxImg.classList.remove("hidden");
-    lightboxImg.src = url;
-  }
-}
-
-function closeLightbox(){
-  lightbox.classList.add("hidden");
-  try { lightboxVideo.pause(); } catch(_) {}
-  lightboxVideo.removeAttribute("src");
-  lightboxVideo.load();
-  lightboxImg.removeAttribute("src");
-}
-
-backBtn.addEventListener("click", () => showAlbums());
-refreshBtn.addEventListener("click", async () => {
-  if(currentAlbum) await openAlbum(currentAlbum);
-  else await loadAlbums();
-});
-newAlbumBtn.addEventListener("click", async () => {
-  const name = prompt("Album name:");
-  if(!name) return;
-  const trimmed = name.trim();
-  if(!trimmed) return;
-  await openAlbum(trimmed);
-});
-
-fileInput.addEventListener("change", async () => {
-  const files = Array.from(fileInput.files || []);
-  fileInput.value = "";
-
-  if(!currentAlbum){
-    alert("Select an album first.");
-    return;
-  }
-  if(files.length === 0) return;
-
-  const sigRes = await fetch(`${API_BASE}/api/upload`,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ albumName: currentAlbum })
-  });
-  const sig = await sigRes.json().catch(()=>({}));
-
-  if(!sig.ok){
-    alert("Upload signature error: " + (sig.detail || sig.error || "Unknown"));
-    return;
-  }
-
-  for(const file of files){
-    const form = new FormData();
-    form.append("file", file);
-    form.append("api_key", sig.apiKey);
-    form.append("timestamp", sig.timestamp);
-    form.append("signature", sig.signature);
-    form.append("folder", sig.folder);
-
-    const up = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`,{
-      method:"POST",
-      body: form
-    });
-
-    if(!up.ok){
-      const err = await up.json().catch(()=>({}));
-      alert("Upload failed: " + (err?.error?.message || "Unknown"));
-      return;
+  function unlock(){
+    if(String(input.value||"")===PASS){
+      localStorage.setItem("siteUnlocked","true");
+      lock.style.display="none";
+    }else{
+      err.style.display="block";
     }
   }
 
-  await openAlbum(currentAlbum);
-});
+  if(localStorage.getItem("siteUnlocked")==="true"){
+    lock.style.display="none";
+  }
 
+  btn.onclick=unlock;
+  input.addEventListener("keydown",e=>{if(e.key==="Enter")unlock();});
+})();
+</script>
+
+<!-- JOURNAL -->
 <script>
-/* ---------------- Journal (REPLACE WHOLE BLOCK WITH THIS) ---------------- */
+const TAGS=["Love","Joy","Reflection","Healing","Growth","Gratitude","Peace","Hope","Longing","Missing You","Prayer","Celebration","Stress","Anxiety","Sadness","Anger"];
+const token="1111"; // must match Vercel JOURNAL_TOKEN if you enabled it
 
-// If you have JOURNAL_TOKEN set in Vercel, put the same value here.
-// If you DON'T use token auth, set "" (empty string).
-const JOURNAL_TOKEN = "1111";
+const journalDate=document.getElementById("journalDate");
+const journalFilterTag=document.getElementById("journalFilterTag");
+const journalSearch=document.getElementById("journalSearch");
+const journalSearchBtn=document.getElementById("journalSearchBtn");
+const journalClearBtn=document.getElementById("journalClearBtn");
+const journalTag=document.getElementById("journalTag");
+const journalText=document.getElementById("journalText");
+const journalPostBtn=document.getElementById("journalPostBtn");
+const journalFeed=document.getElementById("journalFeed");
 
-// Tags
-const TAGS = [
-  "Love","Joy","Gratitude","Peace","Hope","Longing","Missing You",
-  "Reflection","Healing","Growth","Adventure","Dreams","Apology",
-  "Prayer","Celebration","Stress","Anxiety","Sadness","Anger"
-];
-
-// DOM
-const journalDate = document.getElementById("journalDate");
-const journalFilterTag = document.getElementById("journalFilterTag");
-const journalSearch = document.getElementById("journalSearch");
-const journalSearchBtn = document.getElementById("journalSearchBtn");
-const journalClearBtn = document.getElementById("journalClearBtn");
-const journalTag = document.getElementById("journalTag");
-const journalText = document.getElementById("journalText");
-const journalPostBtn = document.getElementById("journalPostBtn");
-const journalFeed = document.getElementById("journalFeed");
-
-function headersJournal(extra){
+function headers(extra){
   return {
-    ...(JOURNAL_TOKEN ? { "x-journal-token": JOURNAL_TOKEN } : {}),
-    ...(extra || {})
+    ...(token?{"x-journal-token":token}:{}),
+    ...(extra||{})
   };
 }
 
-async function safeJson(res){
-  const text = await res.text();
-  try { return JSON.parse(text); }
-  catch { return { ok:false, error:"Non-JSON response", detail:text?.slice(0,400) }; }
-}
-
-function toLocalYMD(iso){
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,"0");
-  const day = String(d.getDate()).padStart(2,"0");
-  return `${y}-${m}-${day}`;
-}
-
-function fmtLocal(iso){
-  try { return new Date(iso).toLocaleString(); }
-  catch { return String(iso || ""); }
-}
-
 function initTags(){
-  // New post tag selector
-  journalTag.innerHTML = "";
-  for(const t of TAGS){
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-    journalTag.appendChild(opt);
-  }
-  journalTag.value = "Reflection";
+  journalTag.innerHTML="";
+  journalFilterTag.innerHTML='<option value="">All tags</option>';
+  TAGS.forEach(t=>{
+    const o1=document.createElement("option");
+    o1.value=t;o1.textContent=t;
+    journalTag.appendChild(o1);
 
-  // Filter dropdown
-  journalFilterTag.innerHTML = "";
-  const all = document.createElement("option");
-  all.value = "";
-  all.textContent = "All tags";
-  journalFilterTag.appendChild(all);
-
-  for(const t of TAGS){
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-    journalFilterTag.appendChild(opt);
-  }
+    const o2=document.createElement("option");
+    o2.value=t;o2.textContent=t;
+    journalFilterTag.appendChild(o2);
+  });
+  journalTag.value="Reflection";
 }
+initTags();
 
-function renderJournal(entries){
-  journalFeed.innerHTML = "";
-
-  if(!entries || entries.length === 0){
-    journalFeed.innerHTML = `<div style="color:rgba(255,255,255,.6)">No journal entries yet.</div>`;
+function render(entries){
+  journalFeed.innerHTML="";
+  if(!entries.length){
+    journalFeed.innerHTML="No journal entries yet.";
     return;
   }
-
-  for(const e of entries){
-    const item = document.createElement("div");
-    item.className = "journalItem";
-    item.dataset.id = e.id;
-
-    const meta = document.createElement("div");
-    meta.className = "journalMeta";
-
-    const left = document.createElement("div");
-    left.innerHTML = `<span class="tagPill">${(e.tag || "Reflection")}</span>`;
-
-    const right = document.createElement("div");
-    const stamp = e.updatedAt ? `Edited · ${fmtLocal(e.updatedAt)}` : fmtLocal(e.createdAt);
-    right.textContent = stamp;
-
-    meta.appendChild(left);
-    meta.appendChild(right);
-
-    const body = document.createElement("div");
-    body.className = "journalBody";
-    body.textContent = e.text || "";
-
-    const btnRow = document.createElement("div");
-    btnRow.className = "journalRowBtns";
-
-    const editBtn = document.createElement("button");
-    editBtn.type = "button";
-    editBtn.className = "smallBtn";
-    editBtn.textContent = "Edit";
-    editBtn.addEventListener("click", () => startEdit(e, item));
-
-    const delBtn = document.createElement("button");
-    delBtn.type = "button";
-    delBtn.className = "smallBtn danger";
-    delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => deleteEntry(e.id));
-
-    btnRow.appendChild(editBtn);
-    btnRow.appendChild(delBtn);
-
-    item.appendChild(meta);
-    item.appendChild(body);
-    item.appendChild(btnRow);
-
-    journalFeed.appendChild(item);
-  }
+  entries.forEach(e=>{
+    const div=document.createElement("div");
+    div.className="journalItem";
+    div.innerHTML=`<div class="tag">${(e.tag||"")} · ${new Date(e.createdAt).toLocaleString()}</div>
+                   <div>${(e.text||"")}</div>`;
+    journalFeed.appendChild(div);
+  });
 }
 
 async function loadJournal(){
-  // ALWAYS fetch unfiltered (prevents UTC date mismatch + query bugs)
-  const res = await fetch(`/api/journal`, { headers: headersJournal(), cache:"no-store" });
-  const data = await safeJson(res);
+  const res=await fetch("/api/journal",{headers:headers(), cache:"no-store"});
+  const data=await res.json().catch(()=>({ok:false}));
 
   if(!data.ok){
-    journalFeed.innerHTML = `<div style="color:rgba(255,255,255,.7)">Failed to load journal: ${data.detail || data.error || "Unknown"}</div>`;
+    journalFeed.innerHTML="Error loading journal.";
     return;
   }
 
-  let entries = data.entries || [];
+  let entries=data.entries||[];
 
-  // Local filtering
-  const wantDate = journalDate.value;           // YYYY-MM-DD
-  const wantTag  = journalFilterTag.value;      // exact
-  const q = journalSearch.value.trim().toLowerCase();
-
-  if(wantDate){
-    entries = entries.filter(e => toLocalYMD(e.createdAt) === wantDate);
-  }
-  if(wantTag){
-    entries = entries.filter(e => String(e.tag || "") === wantTag);
-  }
-  if(q){
-    entries = entries.filter(e => String(e.text || "").toLowerCase().includes(q));
-  }
-
-  renderJournal(entries);
-}
-
-function startEdit(entry, container){
-  const existing = container.querySelector(".editBox");
-  if(existing){ existing.remove(); return; }
-
-  document.querySelectorAll(".editBox").forEach(el => el.remove());
-
-  const editBox = document.createElement("div");
-  editBox.className = "editBox";
-
-  const tagSel = document.createElement("select");
-  tagSel.className = "journalSelect";
-  for(const t of TAGS){
-    const opt = document.createElement("option");
-    opt.value = t;
-    opt.textContent = t;
-    tagSel.appendChild(opt);
-  }
-  tagSel.value = entry.tag || "Reflection";
-
-  const ta = document.createElement("textarea");
-  ta.className = "journalText";
-  ta.rows = 3;
-  ta.value = entry.text || "";
-
-  const row = document.createElement("div");
-  row.style.display = "flex";
-  row.style.gap = "10px";
-  row.style.flexWrap = "wrap";
-  row.style.justifyContent = "flex-end";
-
-  const cancel = document.createElement("button");
-  cancel.type = "button";
-  cancel.className = "smallBtn";
-  cancel.textContent = "Cancel";
-  cancel.addEventListener("click", () => editBox.remove());
-
-  const save = document.createElement("button");
-  save.type = "button";
-  save.className = "smallBtn";
-  save.textContent = "Save";
-  save.addEventListener("click", async () => {
-    await updateEntry(entry.id, ta.value, tagSel.value);
-  });
-
-  row.appendChild(cancel);
-  row.appendChild(save);
-
-  editBox.appendChild(tagSel);
-  editBox.appendChild(ta);
-  editBox.appendChild(row);
-
-  container.appendChild(editBox);
-  setTimeout(() => ta.focus(), 0);
-}
-
-async function postJournal(){
-  const text = journalText.value.trim();
-  if(!text){
-    alert("Write something first 🙂");
-    return;
-  }
-
-  const tag = journalTag.value || "Reflection";
-  journalPostBtn.disabled = true;
-  journalPostBtn.textContent = "Posting…";
-
-  try{
-    const res = await fetch(`/api/journal`, {
-      method:"POST",
-      headers: headersJournal({ "Content-Type":"application/json" }),
-      body: JSON.stringify({ text, tag })
+  // Local date filter (fixes UTC mismatch)
+  if(journalDate.value){
+    entries=entries.filter(e=>{
+      const d=new Date(e.createdAt);
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,"0");
+      const day=String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`===journalDate.value;
     });
-
-    const data = await safeJson(res);
-    if(!data.ok){
-      alert("Failed to post: " + (data.detail || data.error || "Unknown"));
-      return;
-    }
-
-    // Clear input
-    journalText.value = "";
-    journalTag.value = "Reflection";
-
-    // Clear filters so you SEE the new post
-    journalDate.value = "";
-    journalFilterTag.value = "";
-    journalSearch.value = "";
-
-    await loadJournal();
-    journalFeed.scrollIntoView({ behavior:"smooth", block:"start" });
-
-  } finally {
-    journalPostBtn.disabled = false;
-    journalPostBtn.textContent = "Post";
   }
+  if(journalFilterTag.value){
+    entries=entries.filter(e=>String(e.tag||"")===journalFilterTag.value);
+  }
+  if(journalSearch.value.trim()){
+    const q=journalSearch.value.toLowerCase();
+    entries=entries.filter(e=>String(e.text||"").toLowerCase().includes(q));
+  }
+
+  render(entries);
 }
 
-async function updateEntry(id, text, tag){
-  const cleaned = String(text || "").trim();
-  if(!cleaned){
-    alert("Text cannot be empty");
-    return;
-  }
+journalPostBtn.onclick=async()=>{
+  const text=journalText.value.trim();
+  if(!text) return alert("Write something first");
 
-  const res = await fetch(`/api/journal`,{
-    method:"PUT",
-    headers: headersJournal({ "Content-Type":"application/json" }),
-    body: JSON.stringify({ id, text: cleaned, tag })
+  const r = await fetch("/api/journal",{
+    method:"POST",
+    headers:headers({"Content-Type":"application/json"}),
+    body:JSON.stringify({ text, tag: journalTag.value })
   });
 
-  const data = await safeJson(res);
-  if(!data.ok){
-    alert("Failed to update: " + (data.detail || data.error || "Unknown"));
+  const out = await r.json().catch(()=>({ok:false}));
+  if(!out.ok){
+    alert("Failed to post: " + (out.detail || out.error || "Unknown"));
     return;
   }
 
-  await loadJournal();
-}
+  // Clear inputs + filters so you SEE the new post
+  journalText.value="";
+  journalDate.value="";
+  journalFilterTag.value="";
+  journalSearch.value="";
+  journalTag.value="Reflection";
 
-async function deleteEntry(id){
-  const ok = confirm("Delete this journal entry?");
-  if(!ok) return;
-
-  const res = await fetch(`/api/journal?id=${encodeURIComponent(id)}`,{
-    method:"DELETE",
-    headers: headersJournal()
-  });
-
-  const data = await safeJson(res);
-  if(!data.ok){
-    alert("Failed to delete: " + (data.detail || data.error || "Unknown"));
-    return;
-  }
-
-  await loadJournal();
-}
-
-// Controls
-journalSearchBtn.addEventListener("click", (e) => { e.preventDefault(); loadJournal(); });
-
-journalClearBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  journalDate.value = "";
-  journalFilterTag.value = "";
-  journalSearch.value = "";
   loadJournal();
-});
+};
 
-journalPostBtn.addEventListener("click", (e) => { e.preventDefault(); postJournal(); });
+journalSearchBtn.onclick=(e)=>{ e.preventDefault(); loadJournal(); };
+journalClearBtn.onclick=(e)=>{
+  e.preventDefault();
+  journalDate.value="";
+  journalFilterTag.value="";
+  journalSearch.value="";
+  loadJournal();
+};
 
-journalText.addEventListener("keydown", (e) => {
-  if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
-    e.preventDefault();
-    postJournal();
-  }
-});
-
-// Init
-initTags();
 loadJournal();
 </script>
 
 </body>
 </html>
-
