@@ -442,7 +442,7 @@ main{ max-width:1100px; margin:auto; padding:18px; }
 
     <select id="journalTag" class="journalSelect" aria-label="Journal tag"></select>
 
-    <textarea id="journalText" class="journalText" rows="3"
+    <textarea id="journalText" class="journalText" rows="8"
       placeholder="Write a short note… (latest appears on top)"></textarea>
 
     <div class="journalActions">
@@ -496,52 +496,7 @@ window.addEventListener("load", () => {
   }
 });
 
-/* ---------------- Counter (exact elapsed) ---------------- */
-const firstMeeting = new Date(2023, 1, 23, 21, 0, 0); // 23-Feb-2023 21:00
-const counterEl = document.getElementById("loveCounter");
-
-function pad2(n){ return String(n).padStart(2, "0"); }
-
-function addMonths(date, months){
-  const d = new Date(date.getTime());
-  const origDay = d.getDate();
-  d.setMonth(d.getMonth() + months);
-  if (d.getDate() !== origDay) d.setDate(0);
-  return d;
-}
-
-function computeYMDHMS(from, to){
-  if(to < from) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
-
-  let years = to.getFullYear() - from.getFullYear();
-  let anchor = new Date(from.getTime());
-  anchor.setFullYear(from.getFullYear() + years);
-  if(anchor > to){
-    years--;
-    anchor = new Date(from.getTime());
-    anchor.setFullYear(from.getFullYear() + years);
-  }
-
-  let months = (to.getMonth() - anchor.getMonth()) + 12 * (to.getFullYear() - anchor.getFullYear());
-  let anchor2 = addMonths(anchor, months);
-  if(anchor2 > to){
-    months--;
-    anchor2 = addMonths(anchor, months);
-  }
-
-  let ms = to - anchor2;
-  const dayMs = 24*60*60*1000;
-  const hourMs = 60*60*1000;
-  const minMs = 60*1000;
-
-  const days = Math.floor(ms / dayMs); ms -= days * dayMs;
-  const hours = Math.floor(ms / hourMs); ms -= hours * hourMs;
-  const minutes = Math.floor(ms / minMs); ms -= minutes * minMs;
-  const seconds = Math.floor(ms / 1000);
-
-  return { years, months, days, hours, minutes, seconds };
-}
-
+/* ---------------- Frozen Counter ---------------- */
 function updateLoveCounter(){
   const start = new Date("2023-02-23T21:00:00");
   const freeze = new Date("2026-03-26T20:30:00+08:00");
@@ -574,11 +529,6 @@ function updateLoveCounter(){
       ${text}
     </div>
   `;
-}
-
-  counterEl.innerHTML =
-    `<div><b>${t.years}</b> years, <b>${t.months}</b> months, <b>${t.days}</b> days</div>` +
-    `<div><b>${pad2(t.hours)}</b> hours, <b>${pad2(t.minutes)}</b> minutes, <b>${pad2(t.seconds)}</b> seconds since our first meeting</div>`;
 }
 updateLoveCounter();
 
@@ -809,8 +759,8 @@ fileInput.addEventListener("change", async () => {
   await openAlbum(currentAlbum);
 });
 
-/* ---------------- Journal (FIXED) ---------------- */
-const JOURNAL_TOKEN = "1111"; // must match Vercel env var JOURNAL_TOKEN if enabled
+/* ---------------- Journal ---------------- */
+const JOURNAL_TOKEN = "1111";
 
 const TAGS = [
   "Love","Joy","Gratitude","Peace","Hope","Longing","Missing You",
@@ -879,7 +829,6 @@ function initTags(){
 }
 
 async function loadJournal(){
-  // ✅ Always load unfiltered; filter locally (prevents UTC mismatch + server filter issues)
   const res = await fetch(`/api/journal`, { headers: headersJournal(), cache:"no-store" });
   const data = await safeJson(res);
 
@@ -892,7 +841,6 @@ async function loadJournal(){
 
   let entries = data.entries || [];
 
-  // Local filters
   const wantDate = journalDate.value;
   const wantTag = journalFilterTag.value;
   const q = journalSearch.value.trim().toLowerCase();
@@ -943,14 +891,7 @@ async function loadJournal(){
     editBtn.textContent = "Edit";
     editBtn.addEventListener("click", () => startEdit(e, item));
 
-    const delBtn = document.createElement("button");
-    delBtn.type = "button";
-    delBtn.className = "smallBtn danger";
-    delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => deleteEntry(e.id));
-
     btnRow.appendChild(editBtn);
-    btnRow.appendChild(delBtn);
 
     item.appendChild(meta);
     item.appendChild(body);
@@ -981,7 +922,7 @@ function startEdit(entry, container){
 
   const ta = document.createElement("textarea");
   ta.className = "journalText";
-  ta.rows = 3;
+  ta.rows = 8;
   ta.value = entry.text || "";
 
   const row = document.createElement("div");
@@ -1028,7 +969,6 @@ async function postJournal(){
   journalPostBtn.textContent = "Posting…";
 
   try{
-    // ✅ Same-origin
     const res = await fetch(`/api/journal`, {
       method:"POST",
       headers: headersJournal({ "Content-Type":"application/json" }),
@@ -1043,8 +983,6 @@ async function postJournal(){
 
     journalText.value = "";
     journalTag.value = "Reflection";
-
-    // Clear filters so you SEE it
     journalDate.value = "";
     journalFilterTag.value = "";
     journalSearch.value = "";
@@ -1074,24 +1012,6 @@ async function updateEntry(id, text, tag){
   const data = await safeJson(res);
   if(!data.ok){
     alert("Failed to update: " + (data.detail || data.error || "Unknown"));
-    return;
-  }
-
-  await loadJournal();
-}
-
-async function deleteEntry(id){
-  const ok = confirm("Delete this journal entry?");
-  if(!ok) return;
-
-  const res = await fetch(`/api/journal?id=${encodeURIComponent(id)}`,{
-    method:"DELETE",
-    headers: headersJournal()
-  });
-
-  const data = await safeJson(res);
-  if(!data.ok){
-    alert("Failed to delete: " + (data.detail || data.error || "Unknown"));
     return;
   }
 
