@@ -543,15 +543,44 @@ function computeYMDHMS(from, to){
 }
 
 function updateLoveCounter(){
-  const now = new Date();
-  const t = computeYMDHMS(firstMeeting, now);
+  const start = new Date("2023-02-23T21:00:00");
+  const freeze = new Date("2026-03-26T20:30:00+08:00");
+
+  let years = freeze.getFullYear() - start.getFullYear();
+  let months = freeze.getMonth() - start.getMonth();
+  let days = freeze.getDate() - start.getDate();
+
+  if (days < 0) {
+    months--;
+    const prevMonth = new Date(freeze.getFullYear(), freeze.getMonth(), 0);
+    days += prevMonth.getDate();
+  }
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  const parts = [];
+  if (years) parts.push(`${years} Year${years > 1 ? "s" : ""}`);
+  if (months) parts.push(`${months} Month${months > 1 ? "s" : ""}`);
+  if (days) parts.push(`${days} Day${days > 1 ? "s" : ""}`);
+
+  const text = parts.join(", ");
+
+  document.getElementById("loveCounter").innerHTML = `
+    <div style="font-size:13px; opacity:.6;">Time we shared</div>
+    <div style="font-size:16px; font-weight:600; margin-top:4px;">
+      ${text}
+    </div>
+  `;
+}
 
   counterEl.innerHTML =
     `<div><b>${t.years}</b> years, <b>${t.months}</b> months, <b>${t.days}</b> days</div>` +
     `<div><b>${pad2(t.hours)}</b> hours, <b>${pad2(t.minutes)}</b> minutes, <b>${pad2(t.seconds)}</b> seconds since our first meeting</div>`;
 }
 updateLoveCounter();
-setInterval(updateLoveCounter, 1000);
 
 /* ---------------- Gallery ---------------- */
 const albumsGrid = document.getElementById("albumsGrid");
