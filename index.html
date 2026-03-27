@@ -885,14 +885,8 @@ async function loadJournal(){
     const btnRow = document.createElement("div");
     btnRow.className = "journalRowBtns";
 
-    const editBtn = document.createElement("button");
-    editBtn.type = "button";
-    editBtn.className = "smallBtn";
-    editBtn.textContent = "Edit";
-    editBtn.addEventListener("click", () => startEdit(e, item));
-
-    btnRow.appendChild(editBtn);
-
+// No edit button (journal is read-only)
+    
     item.appendChild(meta);
     item.appendChild(body);
     item.appendChild(btnRow);
