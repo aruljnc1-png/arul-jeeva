@@ -39,7 +39,7 @@ function isAuthorized(req) {
   return got === TOKEN;
 }
 
-// ✅ FIX: KV can return strings OR already-parsed objects OR other types
+// KV can return strings OR already-parsed objects OR other types
 function safeParse(v) {
   try {
     if (v == null) return null;
@@ -77,12 +77,8 @@ export default async function handler(req, res) {
       const q = String(req.query?.q || "").trim().toLowerCase();
 
       const raw = await kv.lrange(KEY, 0, MAX_RETURN - 1);
-
-      // ✅ parse robustly
       let entries = raw.map(safeParse).filter(Boolean);
 
-      // Ensure newest first (LPUSH adds newest at head already; this just ensures ordering)
-      // If any entries were stored as objects without createdAt, keep them but they won't filter by date.
       if (date) entries = entries.filter(e => String(e.createdAt || "").slice(0, 10) === date);
       if (tag)  entries = entries.filter(e => String(e.tag || "") === tag);
       if (q)    entries = entries.filter(e => String(e.text || "").toLowerCase().includes(q));
@@ -100,11 +96,9 @@ export default async function handler(req, res) {
       const cleaned = String(text || "").trim();
       const cleanTag = normTag(tag);
 
-      if (!cleaned)
+      if (!cleaned) {
         return send(res, 400, { ok: false, error: "Text is required" });
-
-      if (cleaned.length > 2500)
-        return send(res, 400, { ok: false, error: "Text too long (max 2500 chars)" });
+      }
 
       const entry = {
         id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
@@ -127,21 +121,21 @@ export default async function handler(req, res) {
       const cleaned = String(text || "").trim();
       const cleanTag = normTag(tag);
 
-      if (!entryId)
+      if (!entryId) {
         return send(res, 400, { ok: false, error: "id is required" });
+      }
 
-      if (!cleaned)
+      if (!cleaned) {
         return send(res, 400, { ok: false, error: "text is required" });
-
-      if (cleaned.length > 2500)
-        return send(res, 400, { ok: false, error: "Text too long (max 2500 chars)" });
+      }
 
       const raw = await kv.lrange(KEY, 0, MAX_RETURN - 1);
       let entries = raw.map(safeParse).filter(Boolean);
 
       const idx = entries.findIndex(e => e.id === entryId);
-      if (idx === -1)
+      if (idx === -1) {
         return send(res, 404, { ok: false, error: "Entry not found" });
+      }
 
       entries[idx] = {
         ...entries[idx],
@@ -152,8 +146,9 @@ export default async function handler(req, res) {
 
       const pipeline = kv.pipeline();
       pipeline.del(KEY);
-      for (const e of entries)
+      for (const e of entries) {
         pipeline.rpush(KEY, JSON.stringify(e));
+      }
       await pipeline.exec();
 
       return send(res, 200, { ok: true, entry: entries[idx] });
@@ -162,8 +157,9 @@ export default async function handler(req, res) {
     /* ---------- DELETE ---------- */
     if (req.method === "DELETE") {
       const id = String(req.query?.id || "").trim();
-      if (!id)
+      if (!id) {
         return send(res, 400, { ok: false, error: "id is required" });
+      }
 
       const raw = await kv.lrange(KEY, 0, MAX_RETURN - 1);
       let entries = raw.map(safeParse).filter(Boolean);
@@ -171,13 +167,15 @@ export default async function handler(req, res) {
       const before = entries.length;
       entries = entries.filter(e => e.id !== id);
 
-      if (entries.length === before)
+      if (entries.length === before) {
         return send(res, 404, { ok: false, error: "Entry not found" });
+      }
 
       const pipeline = kv.pipeline();
       pipeline.del(KEY);
-      for (const e of entries)
+      for (const e of entries) {
         pipeline.rpush(KEY, JSON.stringify(e));
+      }
       await pipeline.exec();
 
       return send(res, 200, { ok: true });
